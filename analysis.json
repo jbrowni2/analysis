@@ -1,0 +1,1 @@
+{"files": 646, "detector": "BeGe", "Noise": {"flat": [0.5, 1.5, 0.1], "rise": [6.0, 12.0, 1.0], "query": "18"}, "Energy Resolution": {"peaks": [276.4, 302.85, 356.02]}, "Drift Time": {"Ge Channel": 0}}
