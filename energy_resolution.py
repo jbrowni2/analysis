@@ -63,3 +63,13 @@ plt.xlabel("Energy [KeV]")
 plt.ylabel("FWHM")
 # plt.ylim(0,3.2)
 plt.show()
+
+cols = ['FWHM',"energy","error"]
+r = zip(fw, en, error)
+with open('energy_resolution.csv', 'w') as f:
+    write = csv.writer(f)
+
+    write.writerow(cols)
+    for row in r:
+        w.writerow(row)
+
