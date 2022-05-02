@@ -1,0 +1,26 @@
+{
+  "daq_dir":"HOME/data/raw",
+  "tier1_dir":"HOME/data/tier1",
+  "tier2_dir":"HOME/data/tier2",
+  "lh5_dir":"HOME/data/",
+  "lh5_ignore":"",
+  "tier_dirs" : ["tier1","tier2"],
+  "tier_ignore":"",
+  "subsystems" : [""],
+  "run_types" : ["shaper", "wave"],
+  "evt_dirs" : [""],
+  "suffix":"",
+  "runSelectionDB":"HOME/HDD/raw/junkruns.json",
+
+  "digitizer":"ORSIS3316Model",
+  "daq":"ORCA",
+  "experiment":"COHERENT",
+  "runDB" : "runDB.json",
+  "fileDB" : "fileDB.h5",
+  "daq_ignore" : [".json"],
+  "unique_key" : "Run-{cycle}",
+  "daq_template" : "Run{cycle}",
+  "lh5_template" : "Run{cycle}_{tier}.lh5",
+  "raw_template" : "char_data-{detSN}-{scantype}-run{cycle}-{YYmmdd}T{hhmmss}_tier1.lh5",
+  "dsp_template" : "char_data-{detSN}-{scantype}-run{cycle}-{YYmmdd}T{hhmmss}_{tier}.lh5"
+}

@@ -30,7 +30,7 @@ def find_nearest_bin(array, value):
 def get_t2_data(run):
 
     with open('coherent.json', 'r') as read_file:
-        data = read_file
+        data = json.load(read_file)
     # datadir = os.getenv(data[])
     #ncsu_data_dir = datadir + "/research"
     #t1_dir = os.getenv(data['tier1_dir'])
@@ -67,11 +67,19 @@ def get_t2_data(run):
 def get_t1_data(run):
 
     with open('coherent.json', 'r') as read_file:
-        data = read_file
+        data = json.load(read_file)
+
     # datadir = os.getenv(data[])
     #ncsu_data_dir = datadir + "/research"
-    #t1_dir = os.getenv(data['tier1_dir'])
-    t1_dir = os.getenv(data['tier1_dir'])
+    #t1_dir = data['tier1_dir']
+    #t1_dir = os.getenv("data/tier1")
+
+
+
+    datadir = os.getenv("HOME")
+    ncsu_data_dir = datadir + "/data"
+    t1_dir = ncsu_data_dir + "/tier1"
+
 
     f_raw = t1_dir + '/Run' + str(run)
     raw_store = lh5.Store()
@@ -81,9 +89,9 @@ def get_t1_data(run):
     lh5_keys = raw_store.ls(f_raw)
 
     for tb in lh5_keys:
-        if "dsp" not in tb:
+        if "raw" not in tb:
             tbname = raw_store.ls(lh5_file[tb])[0]
-        if "dsp" in tbname:
+        if "raw" in tbname:
             tb = tb + '/' + tbname  # g024 + /dsp
         lh5_tables.append(tb)
 
@@ -98,7 +106,8 @@ def get_t1_data(run):
         # db_dict = database.get(chan_name) if database else None
         t1_noise, n_rows_read = raw_store.read_object(tb, f_raw, start_row=0, n_rows=buffer_len)
 
-        return t1_noise
+
+    return t1_noise
 
 
 def get_t2_data_multiple(runs):
@@ -181,9 +190,9 @@ def get_t1_data_multiple(runs):
     lh5_keys = raw_store.ls(f_raw)
 
     for tb in lh5_keys:
-        if "dsp" not in tb:
+        if "raw" not in tb:
             tbname = raw_store.ls(lh5_file[tb])[0]
-        if "dsp" in tbname:
+        if "raw" in tbname:
             tb = tb + '/' + tbname  # g024 + /dsp
         lh5_tables.append(tb)
 
@@ -208,9 +217,9 @@ def get_t1_data_multiple(runs):
         lh5_keys = raw_store.ls(f_raw)
 
         for tb in lh5_keys:
-            if "dsp" not in tb:
+            if "raw" not in tb:
                 tbname = raw_store.ls(lh5_file[tb])[0]
-            if "dsp" in tbname:
+            if "raw" in tbname:
                 tb = tb + '/' + tbname  # g024 + /dsp
             lh5_tables.append(tb)
 
