@@ -34,8 +34,7 @@ def get_t2_data(run):
     # datadir = os.getenv(data[])
     #ncsu_data_dir = datadir + "/research"
     #t1_dir = os.getenv(data['tier1_dir'])
-    t2_dir = os.getenv(data['tier2_dir'])
-
+    t2_dir = data['tier2_dir']
     f_raw = t2_dir + '/Run' + str(run)
     raw_store = lh5.Store()
     lh5_file = raw_store.gimme_file(f_raw, 'r')
@@ -313,5 +312,3 @@ def energy_fit(fw, energy, error):
     gmodel = Model(res)
     arams = gmodel.make_params(m=0.04915, intrcpt=0.5, c=0.3)
     result = gmodel.fit(fw, params, x=energy)
-
-    return result.params['m'], result.params['intrcpt'], result.params['c']
