@@ -1,8 +1,8 @@
 {
-  "daq_dir":"HOME/data/raw",
-  "tier1_dir":"HOME/data/tier1",
-  "tier2_dir":"HOME/data/tier2",
-  "lh5_dir":"HOME/data/",
+  "daq_dir":"/home/jlb1694/data/raw",
+  "tier1_dir":"/home/jlb1694/data/tier1",
+  "tier2_dir":"/home/jlb1694/data/tier2",
+  "lh5_dir":"/HOME/data/",
   "lh5_ignore":"",
   "tier_dirs" : ["tier1","tier2"],
   "tier_ignore":"",

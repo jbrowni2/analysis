@@ -111,12 +111,11 @@ def get_t1_data(run):
 
 def get_t2_data_multiple(runs):
     with open('coherent.json', 'r') as read_file:
-        data = read_file
+        data = json.load(read_file)
     # datadir = os.getenv(data[])
     #ncsu_data_dir = datadir + "/research"
-    #t1_dir = os.getenv(data['tier1_dir'])
-    t2_dir = os.getenv(data['tier2_dir'])
-
+    #t1_dir = os.geten(data['tier1_dir'])
+    t2_dir = data['tier2_dir']
     f_raw = t2_dir + '/Run' + str(runs[0])
     raw_store = lh5.Store()
     lh5_file = raw_store.gimme_file(f_raw, 'r')
@@ -267,11 +266,27 @@ def res(x, m, c, intrcpt):
 
 
 def get_df(run):
-    data = get_data(run)
-    d = {'channel': data['channel'].nda, 'trapEmax': data['trapEmax'].nda,
-         'timestamp': data['timestamp'].nda, 'tp_50': data['tp_50'].nda}
-    df = pd.DataFrame(data=d)
+    data = get_t2_data(run)
+    dictionary = dict()
+    for col in data:
+        dictionary[col] = data[col].nda
+        #d = {'channel': data['channel'].nda, 'trapEmax': data['trapEmax'].nda,
+        #    'timestamp': data['timestamp'].nda}
+    #print(dictionary)
+    df = pd.DataFrame(data=dictionary)
     return df
+
+def get_df_multiple(runs):
+    #data = get_t2_data_multiple(runs)
+    lis = []
+    for run in runs:
+        df = get_df(run)
+        lis.append(df)
+
+    dictionary = pd.concat(lis)
+    dictionary = dictionary.reset_index(drop=True)
+    return dictionary
+
 
 
 def get_fwhm(data, min, max, peak):
