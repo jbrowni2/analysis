@@ -37,7 +37,9 @@ if dash != None:
         bines = args.bin[0]
     except:
         bines = 16000
-    counts, bins, bars = plt.hist(t2_data['trapEmax'], histtype='step', bins = bines)
+    gk = t2_data.groupby("channel")
+    ch = gk.get_group(7)
+    counts, bins, bars = plt.hist(ch['trapEmax'], histtype='step', bins = bines)
     plt.yscale('log')
     plt.xlim(args.xlim[0],args.xlim[1])
     plt.show()
@@ -47,13 +49,14 @@ if dash != None:
 else:
     #print(runs[3::])
     t2_data = foundation.get_df(runs[3::])
-
+    gk = t2_data.groupby("channel")
+    ch = gk.get_group(7)
 
     try:
         bines = args.bin[0]
     except:
         bines = 16000
-    counts, bins, bars = plt.hist(t2_data['trapEmax'], histtype='step', bins=bines)
+    counts, bins, bars = plt.hist(ch["trapEmax"], histtype='step', bins=bines)
     plt.yscale('log')
     plt.xlim(args.xlim[0],args.xlim[1])
     plt.show()

@@ -40,8 +40,8 @@ def main():
 
     else:
         t2_data = foundation.get_df(runs[3::])
-        sns.pairplot(t2_data)
-        plt.show()
+        plot = sns.pairplot(t2_data)
+        plot.figure.savefig("pairplot.png")
         #for col in t2_data:
         #    print(col)
 

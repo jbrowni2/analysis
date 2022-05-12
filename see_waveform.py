@@ -37,9 +37,10 @@ if dash != None:
 
 else:
     t1_data = foundation.get_t1_data(runs[3::])
+    print(t1_data["channel"].nda[0:100])
 
-    df = t1_data["waveform"]["values"].nda[0]
+    df = t1_data["waveform"]["values"].nda[4]
 
-
+plt.xlim(1000,2000)
 plt.plot(df)
 plt.show()
