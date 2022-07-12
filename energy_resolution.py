@@ -21,7 +21,7 @@ import os
 import csv
 
 
-with open("detectors.json", "r") as read_file:
+with open("address.json", "r") as read_file:
     data = json.load(read_file)
 
 with open("analysis.json", "r") as read_file:
