@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 from statistics import mean
 import pandas as pd
 import numpy as np
-import os
 from scipy import stats, special
 import matplotlib.colors as mcolors
 from math import exp, sqrt, pi, erfc
