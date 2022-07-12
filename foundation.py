@@ -19,6 +19,7 @@ from pygama.utils import update_progress
 import pygama.git as git
 from pygama.dsp.build_processing_chain import *
 from scipy.fft import fft, ifft, fftfreq
+from os.path import expanduser
 
 
 def find_nearest_bin(array, value):
@@ -34,8 +35,9 @@ def get_t2_data(run):
     # datadir = os.getenv(data[])
     #ncsu_data_dir = datadir + "/research"
     #t1_dir = os.getenv(data['tier1_dir'])
-    t2_dir = data['tier2_dir']
-    f_raw = t2_dir + '/Run' + str(run)
+    home = expanduser("~")
+    t2_dir = home + "\data/dsp"
+    f_raw = t2_dir + "/Run" + str(run)
     raw_store = lh5.Store()
     lh5_file = raw_store.gimme_file(f_raw, 'r')
 
@@ -71,16 +73,11 @@ def get_t1_data(run):
     # datadir = os.getenv(data[])
     #ncsu_data_dir = datadir + "/research"
     #t1_dir = data['tier1_dir']
-    #t1_dir = os.getenv("data/tier1")
+    home = expanduser("~")
+    t1_dir = home + "\data/raw"
 
 
-
-    datadir = os.getenv("HOME")
-    ncsu_data_dir = datadir + "/data"
-    t1_dir = ncsu_data_dir + "/tier1"
-
-
-    f_raw = t1_dir + '/Run' + str(run)
+    f_raw = t1_dir + '\Run' + str(run)
     raw_store = lh5.Store()
     lh5_file = raw_store.gimme_file(f_raw, 'r')
 

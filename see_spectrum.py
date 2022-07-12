@@ -50,13 +50,22 @@ else:
     #print(runs[3::])
     t2_data = foundation.get_df(runs[3::])
     gk = t2_data.groupby("channel")
-    ch = gk.get_group(7)
+    ch = gk.get_group(0)
+
+    with open("detectors.json", "r") as read_file:
+        data = json.load(read_file)
+
+    slope = data['BeGe']['Calibration'][0]
+    intercept = data["BeGe"]['Calibration'][1]
+
+
+    ch["energy"] = ch["trapEmax"] * slope + intercept
 
     try:
         bines = args.bin[0]
     except:
         bines = 16000
-    counts, bins, bars = plt.hist(ch["trapEmax"], histtype='step', bins=bines)
+    counts, bins, bars = plt.hist(ch["energy"], histtype='step', bins=bines)
     plt.yscale('log')
     plt.xlim(args.xlim[0],args.xlim[1])
     plt.show()
