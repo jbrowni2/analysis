@@ -4,7 +4,7 @@ from statistics import mean
 import matplotlib.pyplot as plt
 import json
 import os
-import foundation
+import processes as pr
 import plotly.express as px
 import sys
 import argparse
@@ -33,16 +33,19 @@ if dash != None:
     start = runs[3:dash]
     end = runs[dash+4::]
     run_list = list(range(int(start),int(end)+1))
-    t1_data = foundation.get_t1_data_multiple(run_list)
+    t1_data = pr.foundation.get_t1_data_multiple(run_list)
 
     df = t1_data[run_list[0]]["waveform"]["values"].nda[index]
 
 
 else:
-    t1_data = foundation.get_t1_data(runs[3::])
+    t1_data = pr.foundation.get_t1_data(runs[3::])
 
     df = t1_data["waveform"]["values"].nda[index]
 
-plt.xlim(1000,2000)
+plt.xlim(0,10034)
+plt.title("Plot of Waveform whose length has doubled")
+plt.ylabel("ADC")
+plt.xlabel("Clock ticks [8 ns]")
 plt.plot(df)
 plt.show()

@@ -1,4 +1,4 @@
-import foundation
+import processes
 import os
 import json
 import numpy as np
@@ -6,7 +6,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import sys
 import argparse
-import processes
 
 def main():
     doc = ""
@@ -31,13 +30,13 @@ def main():
         start = runs[3:dash]
         end = runs[dash+4::]
         run_list = list(range(int(start),int(end)+1))
-        t2_data = foundation.get_df_multiple(run_list)
+        t2_data = get_df_multiple(run_list)
         print(t2_data)
         #print(t2_data[int(start)])
 
 
     else:
-        t2_data = foundation.get_df(runs[3::])
+        t2_data = processes.foundation.get_df(runs[3::])
         #for col in t2_data:
         #    print(col)
 

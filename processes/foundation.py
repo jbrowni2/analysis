@@ -28,8 +28,9 @@ def find_nearest_bin(array, value):
 
 
 def get_t2_data(run):
-
-    with open('../address.json', 'r') as read_file:
+    cwd = os.getcwd()
+    file = cwd + '/address.json'
+    with open(file, 'r') as read_file:
         data = json.load(read_file)
     #ncsu_data_dir = datadir + "/research"
     t2_dir = data['tier2_dir']
@@ -62,8 +63,9 @@ def get_t2_data(run):
 
 
 def get_t1_data(run):
-
-    with open('../address.json', 'r') as read_file:
+    cwd = os.getcwd()
+    file = cwd + '/address.json'
+    with open(file, 'r') as read_file:
         data = json.load(read_file)
 
     # datadir = os.getenv(data[])
@@ -101,7 +103,9 @@ def get_t1_data(run):
 
 
 def get_t2_data_multiple(runs):
-    with open('../address.json', 'r') as read_file:
+    cwd = os.getcwd()
+    file = cwd + '/address.json'
+    with open(file, 'r') as read_file:
         data = json.load(read_file)
     # datadir = os.getenv(data[])
     #ncsu_data_dir = datadir + "/research"
@@ -164,8 +168,10 @@ def get_t2_data_multiple(runs):
 
 
 def get_t1_data_multiple(runs):
-    with open('../address.json', 'r') as read_file:
-        data = read_file
+    cwd = os.getcwd()
+    file = cwd + '/address.json'
+    with open(file, 'r') as read_file:
+        data = json.load(read_file)
     # datadir = os.getenv(data[])
     #ncsu_data_dir = datadir + "/research"
     #t1_dir = os.getenv(data['tier1_dir'])
