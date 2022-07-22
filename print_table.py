@@ -15,10 +15,12 @@ def main():
 
     arg('-r', '--runs', nargs=1, type=str,
             help="list of files to calibrate (-r 'Run####-Run####') ")
+    arg('-t', '--table', nargs=1, type=str, help="name of table you wants to see (-t 'card1')")
 
     args = par.parse_args()
 
     runs = args.runs[0]
+    tab = args.table[0]
 
     try:
         dash = runs.index('-')
@@ -36,7 +38,7 @@ def main():
 
 
     else:
-        t2_data = processes.foundation.get_df(runs[3::])
+        t2_data = processes.foundation.get_df(runs[3::], tab)
         #for col in t2_data:
         #    print(col)
 

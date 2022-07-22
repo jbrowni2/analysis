@@ -35,8 +35,9 @@ def PlotRawSpectrum(runs, spec='trapEmax', xhi=80000, xlo=0, yhi=30000, ylo=0, y
 
 
 def PlotCalSpectrum(runs, spec='trapEmax', xhi=80000, xlo=0, yhi=30000, ylo=0, ysc = 'log', xsc = "linear", bin=8000, titl = 'Raw Spectrum', ytitl = 'counts', xtitl = 'Energy', det = "BeGe"):
-
-    with open("../detectors.json", "r") as read_file:
+    cwd = os.getcwd()
+    file = cwd + '/detectors.json'
+    with open(file, "r") as read_file:
         detectors = json.load(read_file)
 
     slope = detectors[det]['Calibration'][0]

@@ -19,6 +19,7 @@ import pygama.git as git
 from pygama.dsp.build_processing_chain import *
 from scipy.fft import fft, ifft, fftfreq
 from os.path import expanduser
+import copy
 
 
 def find_nearest_bin(array, value):
@@ -27,7 +28,7 @@ def find_nearest_bin(array, value):
     return idx
 
 
-def get_t2_data(run):
+def get_t2_data(run, tab = None):
     cwd = os.getcwd()
     file = cwd + '/address.json'
     with open(file, 'r') as read_file:
@@ -41,16 +42,40 @@ def get_t2_data(run):
     lh5_tables = []
     lh5_keys = raw_store.ls(f_raw)
 
-    for tb in lh5_keys:
-        if "dsp" not in tb:
-            tbname = raw_store.ls(lh5_file[tb])[0]
-        if "dsp" in tbname:
-            tb = tb + '/' + tbname  # g024 + /dsp
-        lh5_tables.append(tb)
+    if tab == None:
+        for tb in lh5_keys:
+            if "dsp" not in tb:
+                tbname = raw_store.ls(lh5_file[tb])[0]
+            if "dsp" in tbname:
+                tb = tb + '/' + tbname  # g024 + /dsp
+            lh5_tables.append(tb)
 
-    lh5_tables.pop(-1)
+        lh5_tables.pop(-1)
+    elif type(tab) != list:
+        if tab in lh5_keys:
+            if "dsp" not in tab:
+                tb = copy.deepcopy(tab)
+                tbname = raw_store.ls(lh5_file[tb])[0]
+            if "dsp" in tbname:
+                tb = tb + '/' + tbname  # g024 + /dsp
+            lh5_tables.append(tb)
+        else:
+            print(tab, "table not in list")
+            exit()
+    elif type(tab) == list:
+        for tb in tab:
+            if tb in list:
+                if "dsp" not in tb:
+                    tbname = raw_store.ls(lh5_file[tb])[0]
+                if "dsp" in tbname:
+                    tb = tb + '/' + tbname  # g024 + /dsp
+                lh5_tables.append(tb)
+            else:
+                print(tab, "table not in list")
+                exit()
 
     buffer_len = 10000000000000000
+    t2_data = []
     for tb in lh5_tables:
         # load primary table and build processing chain and output table
         tot_n_rows = raw_store.read_n_rows(tb, f_raw)
@@ -58,8 +83,9 @@ def get_t2_data(run):
         chan_name = tb.split('/')[0]
         # db_dict = database.get(chan_name) if database else None
         t2_noise, n_rows_read = raw_store.read_object(tb, f_raw, start_row=0, n_rows=buffer_len)
+        t2_data.append(t2_noise)
 
-        return t2_noise
+        return t2_data
 
 
 def get_t1_data(run):
@@ -262,11 +288,11 @@ def res(x, m, c, intrcpt):
     return fit
 
 
-def get_df(run):
-    data = get_t2_data(run)
+def get_df(run, tab=None):
+    data = get_t2_data(run, tab)
     dictionary = dict()
-    for col in data:
-        dictionary[col] = data[col].nda
+    for col in data[0]:
+        dictionary[col] = data[0][col].nda
         #d = {'channel': data['channel'].nda, 'trapEmax': data['trapEmax'].nda,
         #    'timestamp': data['timestamp'].nda}
     #print(dictionary)
