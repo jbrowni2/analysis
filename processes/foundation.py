@@ -299,11 +299,11 @@ def get_df(run, tab=None):
     df = pd.DataFrame(data=dictionary)
     return df
 
-def get_df_multiple(runs):
+def get_df_multiple(runs, tb=None):
     #data = get_t2_data_multiple(runs)
     lis = []
     for run in runs:
-        df = get_df(run)
+        df = get_df(run, tb)
         lis.append(df)
 
     dictionary = pd.concat(lis)
