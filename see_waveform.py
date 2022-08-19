@@ -43,7 +43,7 @@ else:
 
     df = t1_data["waveform"]["values"].nda[index]
 
-plt.xlim(0,10034)
+plt.xlim(0,20034)
 plt.title("Plot of Waveform whose length has doubled")
 plt.ylabel("ADC")
 plt.xlabel("Clock ticks [8 ns]")

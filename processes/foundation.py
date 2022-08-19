@@ -9,14 +9,10 @@ import matplotlib.colors as mcolors
 from math import exp, sqrt, pi, erfc
 from lmfit import Model
 from scipy.optimize import curve_fit
-from pygama import lh5
 from pygama import __version__ as pygama_version
-from pygama.dsp.ProcessingChain import ProcessingChain
-from pygama.dsp.units import *
-from pygama import lh5
-from pygama.utils import update_progress
-import pygama.git as git
-from pygama.dsp.build_processing_chain import *
+import pygama
+import pygama.lgdo as lgdo
+import pygama.lgdo.lh5_store as lh5
 from scipy.fft import fft, ifft, fftfreq
 from os.path import expanduser
 import copy
@@ -35,12 +31,14 @@ def get_t2_data(run, tab = None):
         data = json.load(read_file)
     #ncsu_data_dir = datadir + "/research"
     t2_dir = data['tier2_dir']
-    f_raw = t2_dir + "/Run" + str(run)
-    raw_store = lh5.Store()
+    f_raw = t2_dir + "/Run" + str(run)+ '.lh5'
+    raw_store = lh5.LH5Store()
     lh5_file = raw_store.gimme_file(f_raw, 'r')
 
     lh5_tables = []
-    lh5_keys = raw_store.ls(f_raw)
+    #lh5_keys = raw_store.ls(f_raw)
+    lh5_keys = lh5.ls(f_raw)
+    tb = []
 
     if tab == None:
         for tb in lh5_keys:
@@ -53,12 +51,7 @@ def get_t2_data(run, tab = None):
         lh5_tables.pop(-1)
     elif type(tab) != list:
         if tab in lh5_keys:
-            if "dsp" not in tab:
-                tb = copy.deepcopy(tab)
-                tbname = raw_store.ls(lh5_file[tb])[0]
-            if "dsp" in tbname:
-                tb = tb + '/' + tbname  # g024 + /dsp
-            lh5_tables.append(tb)
+            lh5_tables.append(tab)
         else:
             print(tab, "table not in list")
             exit()
@@ -99,21 +92,23 @@ def get_t1_data(run):
     t1_dir = data['tier1_dir']
 
 
-    f_raw = t1_dir + '/Run' + str(run)
-    raw_store = lh5.Store()
+    f_raw = t1_dir + '/Run' + str(run) + '.lh5'
+    raw_store = lh5.LH5Store()
     lh5_file = raw_store.gimme_file(f_raw, 'r')
 
     lh5_tables = []
-    lh5_keys = raw_store.ls(f_raw)
+    #lh5_keys = raw_store.ls(f_raw)
+    lh5_tables = lh5.ls(f_raw)
+    print(lh5_tables)
 
-    for tb in lh5_keys:
-        if "raw" not in tb:
-            tbname = raw_store.ls(lh5_file[tb])[0]
-        if "raw" in tbname:
-            tb = tb + '/' + tbname  # g024 + /dsp
-        lh5_tables.append(tb)
+    #for tb in lh5_keys:
+    #    if "raw" not in tb:
+    #        tbname = raw_store.ls(lh5_file[tb])[0]
+    #    if "raw" in tbname:
+    #        tb = tb + '/' + tbname  # g024 + /dsp
+    #    lh5_tables.append(tb)
 
-    # lh5_tables.pop(-1)
+    #lh5_tables.pop(-1)
 
     buffer_len = 10000000000000000
     for tb in lh5_tables:

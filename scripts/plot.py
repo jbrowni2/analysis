@@ -10,8 +10,8 @@ import sys
 
 def main():
 
-    runs = [1036, 1037, 1038, 1039, 1040, 1041]
-    processes.show_spectrum.PlotRawSpectrum(1034, 'Card1', xhi=400000, xlo=50000, yhi=1000, ylo=10, bin=160000)
+    runs = [1124,1125,1126,1127]
+    processes.show_spectrum.PlotRawSpectrum(runs, 'Card1', xhi=1000, xlo=0, yhi=1000, ylo=10, bin=160000, ysc='linear')
 
 
 if __name__ == "__main__":
