@@ -18,10 +18,6 @@ from os.path import expanduser
 import copy
 
 
-def find_nearest_bin(array, value):
-    array = np.asarray(array)
-    idx = (np.abs(array - value)).argmin()
-    return idx
 
 
 def get_t2_data(run, tab = None):
@@ -29,14 +25,13 @@ def get_t2_data(run, tab = None):
     file = cwd + '/address.json'
     with open(file, 'r') as read_file:
         data = json.load(read_file)
-    #ncsu_data_dir = datadir + "/research"
+
     t2_dir = data['tier2_dir']
     f_raw = t2_dir + "/Run" + str(run)+ '.lh5'
     raw_store = lh5.LH5Store()
     lh5_file = raw_store.gimme_file(f_raw, 'r')
 
     lh5_tables = []
-    #lh5_keys = raw_store.ls(f_raw)
     lh5_keys = lh5.ls(f_raw)
     tb = []
 
@@ -74,7 +69,6 @@ def get_t2_data(run, tab = None):
         tot_n_rows = raw_store.read_n_rows(tb, f_raw)
 
         chan_name = tb.split('/')[0]
-        # db_dict = database.get(chan_name) if database else None
         t2_noise, n_rows_read = raw_store.read_object(tb, f_raw, start_row=0, n_rows=buffer_len)
         t2_data.append(t2_noise)
 
@@ -87,8 +81,6 @@ def get_t1_data(run):
     with open(file, 'r') as read_file:
         data = json.load(read_file)
 
-    # datadir = os.getenv(data[])
-    #ncsu_data_dir = datadir + "/research"
     t1_dir = data['tier1_dir']
 
 
@@ -97,18 +89,8 @@ def get_t1_data(run):
     lh5_file = raw_store.gimme_file(f_raw, 'r')
 
     lh5_tables = []
-    #lh5_keys = raw_store.ls(f_raw)
     lh5_tables = lh5.ls(f_raw)
-    print(lh5_tables)
 
-    #for tb in lh5_keys:
-    #    if "raw" not in tb:
-    #        tbname = raw_store.ls(lh5_file[tb])[0]
-    #    if "raw" in tbname:
-    #        tb = tb + '/' + tbname  # g024 + /dsp
-    #    lh5_tables.append(tb)
-
-    #lh5_tables.pop(-1)
 
     buffer_len = 10000000000000000
     for tb in lh5_tables:
@@ -116,7 +98,6 @@ def get_t1_data(run):
         tot_n_rows = raw_store.read_n_rows(tb, f_raw)
 
         chan_name = tb.split('/')[0]
-        # db_dict = database.get(chan_name) if database else None
         t1_noise, n_rows_read = raw_store.read_object(tb, f_raw, start_row=0, n_rows=buffer_len)
 
 
@@ -128,9 +109,7 @@ def get_t2_data_multiple(runs):
     file = cwd + '/address.json'
     with open(file, 'r') as read_file:
         data = json.load(read_file)
-    # datadir = os.getenv(data[])
-    #ncsu_data_dir = datadir + "/research"
-    #t1_dir = os.geten(data['tier1_dir'])
+
     t2_dir = data['tier2_dir']
     f_raw = t2_dir + '/Run' + str(runs[0])
     raw_store = lh5.Store()
@@ -154,7 +133,6 @@ def get_t2_data_multiple(runs):
         tot_n_rows = raw_store.read_n_rows(tb, f_raw)
 
         chan_name = tb.split('/')[0]
-        # db_dict = database.get(chan_name) if database else None
         t2_noise, n_rows_read = raw_store.read_object(
             tb, f_raw, start_row=0, n_rows=buffer_len)
 
@@ -181,7 +159,6 @@ def get_t2_data_multiple(runs):
             tot_n_rows = raw_store.read_n_rows(tb, f_raw)
 
             chan_name = tb.split('/')[0]
-            # db_dict = database.get(chan_name) if database else None
             t2_noise[run], n_rows_read = raw_store.read_object(
                 tb, f_raw, start_row=0, n_rows=buffer_len)
 
@@ -193,9 +170,7 @@ def get_t1_data_multiple(runs):
     file = cwd + '/address.json'
     with open(file, 'r') as read_file:
         data = json.load(read_file)
-    # datadir = os.getenv(data[])
-    #ncsu_data_dir = datadir + "/research"
-    #t1_dir = os.getenv(data['tier1_dir'])
+
     t1_dir = data['tier1_dir']
 
     f_raw = t1_dir + '/Run' + str(runs[0])
@@ -212,7 +187,6 @@ def get_t1_data_multiple(runs):
             tb = tb + '/' + tbname  # g024 + /dsp
         lh5_tables.append(tb)
 
-    # lh5_tables.pop(-1)
 
     buffer_len = 10000000000000000
     for tb in lh5_tables:
@@ -220,7 +194,6 @@ def get_t1_data_multiple(runs):
         tot_n_rows = raw_store.read_n_rows(tb, f_raw)
 
         chan_name = tb.split('/')[0]
-        # db_dict = database.get(chan_name) if database else None
         t2_noise, n_rows_read = raw_store.read_object(
             tb, f_raw, start_row=0, n_rows=buffer_len)
 
@@ -239,7 +212,6 @@ def get_t1_data_multiple(runs):
                 tb = tb + '/' + tbname  # g024 + /dsp
             lh5_tables.append(tb)
 
-        # lh5_tables.pop(-1)
 
         buffer_len = 10000000000000000
         for tb in lh5_tables:
@@ -254,48 +226,16 @@ def get_t1_data_multiple(runs):
     return t1_noise
 
 
-def get_peak(data, min, max):
-    counts, bins, bars = plt.hist(data, histtype='step', bins=160000)
-
-    peak_min, peak_max = min, max
-
-    peak_range = find_nearest_bin(bins, peak_min), find_nearest_bin(bins, peak_max)
-
-    peak_idx = np.argmax(counts[peak_range[0]:peak_range[1]]) + peak_range[0]
-
-    peak = bins[peak_idx]
-
-    return peak
-
-
-def lingaus(x, a1, m1, s1, slope, intrcpt):
-    """1-d gaussian with linear background: gaussian(x, amp, cen, wid)"""
-    return a1 * np.exp(-(x-m1)**2 / (2*s1**2)) + slope*x + intrcpt
-
-
-def noise(x, h1, h2, h3):
-    fit = h1*x + h2/x + h3
-    return fit
-
-
-def res(x, m, c, intrcpt):
-    fit = m*np.power(x + c*(np.power(x, 2)), 0.5) + intrcpt
-    return fit
-
-
 def get_df(run, tab=None):
     data = get_t2_data(run, tab)
     dictionary = dict()
     for col in data[0]:
         dictionary[col] = data[0][col].nda
-        #d = {'channel': data['channel'].nda, 'trapEmax': data['trapEmax'].nda,
-        #    'timestamp': data['timestamp'].nda}
-    #print(dictionary)
+
     df = pd.DataFrame(data=dictionary)
     return df
 
 def get_df_multiple(runs, tb=None):
-    #data = get_t2_data_multiple(runs)
     lis = []
     for run in runs:
         df = get_df(run, tb)
@@ -306,7 +246,7 @@ def get_df_multiple(runs, tb=None):
     return dictionary
 
 
-
+'''
 def get_fwhm(data, min, max, peak):
     counts, bins, bars = plt.hist(data, histtype='step', bins=160000)
     plt.xlim(min, max)
@@ -328,20 +268,4 @@ def get_fwhm(data, min, max, peak):
     energy = result.params['m1'].value
 
     return FWHM, err, energy
-
-
-def noise_fit(rise, flat, fw, error):
-    # This code fits the resolution map to the equation it should follow.
-    gmodel = Model(noise)
-    #params = gmodel.make_params(A=200, m1=277, s1=0.9, H_tail=-1, H_step=-1, tau=-1, slope=-0.12, intrcpt=180)
-    params = gmodel.make_params(h1=0.005, h2=1.2, h3=0.5)
-    #params['h2'].vary = False
-    #params['m'].vary = False
-    result = gmodel.fit(fw, params, x=rise)
-    return result.params['h1'].value, result.params['h2'].value, result.params['h3'].value, result
-
-
-def energy_fit(fw, energy, error):
-    gmodel = Model(res)
-    arams = gmodel.make_params(m=0.04915, intrcpt=0.5, c=0.3)
-    result = gmodel.fit(fw, params, x=energy)
+'''
