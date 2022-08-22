@@ -5,7 +5,9 @@ from scipy import stats
 import matplotlib.pyplot as plt
 import json
 import os
-import processes
+import processes.foundation as fd
+import processes.fitModel as fM
+import processes.histogramAction as hA
 import plotly.express as px
 import sys
 
@@ -27,9 +29,9 @@ def main():
     runs = 1034
 
     if isinstance(runs, int):
-        data = processes.foundation.get_df(runs)
+        data = fd.get_df(runs)
     else:
-        data = get_df_multiple(runs)
+        data = fd.get_df_multiple(runs)
 
 
     counts, bins, bars = plt.hist(data["trapEmax"], histtype='step', bins=160000)

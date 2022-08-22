@@ -7,6 +7,13 @@ import matplotlib.pyplot as plt
 import sys
 import argparse
 
+"""
+    This script was written by James Browning 8/22/22.
+    This script is to print the table of any dsp data that is produced by pygama.
+"""
+
+
+
 def main():
     doc = ""
     rthf = argparse.RawTextHelpFormatter
@@ -34,13 +41,11 @@ def main():
         run_list = list(range(int(start),int(end)+1))
         t2_data = get_df_multiple(run_list)
         print(t2_data)
-        #print(t2_data[int(start)])
 
 
     else:
         t2_data = processes.foundation.get_df(runs[3::], tab)
-        #for col in t2_data:
-        #    print(col)
+
 
         print(t2_data)
 

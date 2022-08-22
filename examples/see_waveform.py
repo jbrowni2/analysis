@@ -10,42 +10,46 @@ import sys
 import argparse
 
 
-doc = ""
-rthf = argparse.RawTextHelpFormatter
-par = argparse.ArgumentParser(description=doc, formatter_class=rthf)
-arg, st, sf = par.add_argument, 'store_true', 'store_false'
+def main():
+    doc = ""
+    rthf = argparse.RawTextHelpFormatter
+    par = argparse.ArgumentParser(description=doc, formatter_class=rthf)
+    arg, st, sf = par.add_argument, 'store_true', 'store_false'
 
-arg('-r', '--runs', nargs=1, type=str,
+    arg('-r', '--runs', nargs=1, type=str,
         help="list of files to calibrate (-r 'Run####-Run####') ")
 
-arg('-i', '--index', nargs='*', type=int, help='index of waveform you want to see.')
+    arg('-i', '--index', nargs='*', type=int, help='index of waveform you want to see.')
 
-args = par.parse_args()
+    args = par.parse_args()
 
-runs = args.runs[0]
-index = args.index[0]
-try:
-    dash = runs.index('-')
-except:
-    dash = None
+    runs = args.runs[0]
+    index = args.index[0]
+    try:
+        dash = runs.index('-')
+    except:
+        dash = None
 
-if dash != None:
-    start = runs[3:dash]
-    end = runs[dash+4::]
-    run_list = list(range(int(start),int(end)+1))
-    t1_data = pr.foundation.get_t1_data_multiple(run_list)
+    if dash != None:
+        start = runs[3:dash]
+        end = runs[dash+4::]
+        run_list = list(range(int(start),int(end)+1))
+        t1_data = pr.foundation.get_t1_data_multiple(run_list)
 
-    df = t1_data[run_list[0]]["waveform"]["values"].nda[index]
+        df = t1_data[run_list[0]]["waveform"]["values"].nda[index]
 
 
-else:
-    t1_data = pr.foundation.get_t1_data(runs[3::])
+    else:
+        t1_data = pr.foundation.get_t1_data(runs[3::])
 
-    df = t1_data["waveform"]["values"].nda[index]
+        df = t1_data["waveform"]["values"].nda[index]
 
-plt.xlim(0,20034)
-plt.title("Plot of Waveform whose length has doubled")
-plt.ylabel("ADC")
-plt.xlabel("Clock ticks [8 ns]")
-plt.plot(df)
-plt.show()
+    plt.xlim(0,len(df))
+    plt.title("Plot of Waveform whose length has doubled")
+    plt.ylabel("ADC")
+    plt.xlabel("Clock ticks [8 ns]")
+    plt.plot(df)
+    plt.show()
+
+if __name__ == "__main__":
+    main()

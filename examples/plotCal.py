@@ -10,8 +10,8 @@ import sys
 
 def main():
 
-    runs = [1036, 1037, 1038, 1039, 1040, 1041]
-    processes.show_spectrum.PlotCalSpectrum(runs, det = 'BeGe', tb = 'Card1', xhi=4000, xlo=10, yhi=1000, ylo=10, bin=160000)
+    runs = [1125]
+    processes.show_spectrum.PlotCalSpectrum(runs, det = 'BeGe', tb = 'Card1', xhi=1000, xlo=0, yhi=3000, ylo=0, bin=3000)
 
 
 if __name__ == "__main__":

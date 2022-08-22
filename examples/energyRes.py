@@ -5,6 +5,8 @@ import os
 from scipy import stats
 from math import exp
 import processes.foundation as fd
+import processes.fitModel as fM
+import processes.histogramAction as hA
 from math import exp, sqrt, pi, erfc
 from lmfit import Model
 
@@ -26,12 +28,12 @@ def main():
         counts, bins, bars = plt.hist(t2_data['trapEmax'], histtype='step', bins=160000)
         j = 0
         for ran in upLow[i]:
-            lower = fd.find_nearest_bin(bins,ran[0])
-            upper = fd.find_nearest_bin(bins,ran[1])
+            lower = hA.find_nearest_bin(bins,ran[0])
+            upper = hA.find_nearest_bin(bins,ran[1])
             ydata = counts[lower:upper]
             xdata = bins[lower:upper]
 
-            gmodel = Model(fd.lingaus)
+            gmodel = Model(fM.lingaus)
             #params = gmodel.make_params(A=700, m1=315.5, s1=0.5, H_tail=-0.000001, H_step=1, tau=-0.5, slope=-6, intrcpt=180)
             params = gmodel.make_params(a1=1000, m1=energy_list[i][j], s1=2.0, slope=-0.046, intrcpt=58)
             #params['s1'].vary = False
@@ -52,7 +54,7 @@ def main():
     print(energy)
 
     #This code fits the resolution map to the equation it should follow.
-    gmodel = Model(fd.res)
+    gmodel = Model(fM.res)
     #params = gmodel.make_params(A=200, m1=277, s1=0.9, H_tail=-1, H_step=-1, tau=-1, slope=-0.12, intrcpt=180)
     params = gmodel.make_params(m=0.02,intrcpt = 6.0, c = 0.5)
     #params['intrcpt'].vary = False
