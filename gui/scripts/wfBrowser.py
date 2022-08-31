@@ -85,9 +85,9 @@ def back(index, data):
 
 
 
-def graph(run):
+def graph(run, table):
     fig = Figure(figsize = (5,5) , dpi = 100)
-    t1_data = fd.get_t1_data(run, "Card1")
+    t1_data = fd.get_t1_data(run, table)
 
     numOfImages = len(t1_data[0]["waveform"]["values"].nda)
 
@@ -135,7 +135,10 @@ def Browser():
     wfBrowserWindow.geometry("1400x600")
 
     # A Label widget to show in toplevel
-    e = Entry(wfBrowserWindow, width=35, borderwidth=5)
-    e.grid(row=1, column=0, columnspan=3, padx=10, pady=10)
-    my_button = Button(wfBrowserWindow, text = "Graph It!", command=lambda: graph(int(e.get()))).grid(row=0, column=0)
+    runNum = Entry(wfBrowserWindow, width=35, borderwidth=5)
+    runNum.grid(row=1, column=0, columnspan=3, padx=10, pady=10)
+    tableName = Entry(wfBrowserWindow, width=35, borderwidth=5)
+    tableName.grid(row=3, column=0, columnspan=3, padx=10, pady=10)
+    my_button = Button(wfBrowserWindow, text = "Graph It!", command=lambda: graph(int(runNum.get()), str(tableName.get()))).grid(row=0, column=0)
     mylbl = Label(wfBrowserWindow, text = "What run number would you like to browse?").grid(row=2, column=0)
+    mylbl2 = Label(wfBrowserWindow, text = "What table would you like to browse?").grid(row=4, column=0)
