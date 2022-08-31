@@ -1,26 +1,18 @@
 import os
 import json
-import matplotlib.pyplot as plt
-from statistics import mean
 import pandas as pd
 import numpy as np
-from scipy import stats, special
-import matplotlib.colors as mcolors
-from math import exp, sqrt, pi, erfc
-from lmfit import Model
-from scipy.optimize import curve_fit
 from pygama import __version__ as pygama_version
 import pygama
 import pygama.lgdo as lgdo
 import pygama.lgdo.lh5_store as lh5
-from scipy.fft import fft, ifft, fftfreq
 from os.path import expanduser
 import copy
 
 
 
 
-def get_t2_data(run, tab = None):
+def get_t2_data(run, tab=None):
     cwd = os.getcwd()
     file = cwd + '/address.json'
     with open(file, 'r') as read_file:
@@ -33,7 +25,6 @@ def get_t2_data(run, tab = None):
 
     lh5_tables = []
     lh5_keys = lh5.ls(f_raw)
-    tb = []
 
     if tab == None:
         for tb in lh5_keys:
@@ -75,7 +66,7 @@ def get_t2_data(run, tab = None):
         return t2_data
 
 
-def get_t1_data(run):
+def get_t1_data(run, tab=None):
     cwd = os.getcwd()
     file = cwd + '/address.json'
     with open(file, 'r') as read_file:
@@ -89,19 +80,37 @@ def get_t1_data(run):
     lh5_file = raw_store.gimme_file(f_raw, 'r')
 
     lh5_tables = []
-    lh5_tables = lh5.ls(f_raw)
+    lh5_keys = lh5.ls(f_raw)
 
+
+    if tab == None:
+        lh5_tables = lh5.ls(f_raw)
+    elif type(tab) != list:
+        if tab in lh5_keys:
+            lh5_tables.append(tab)
+        else:
+            print(tab, "table not in list")
+            exit()
+    elif type(tab) == list:
+        for tb in tab:
+            if tb in lh5_keys:
+                lh5_tables.append(tb)
+            else:
+                print(tab, "table not in list")
+                exit()
 
     buffer_len = 10000000000000000
+    t1_data = []
     for tb in lh5_tables:
         # load primary table and build processing chain and output table
         tot_n_rows = raw_store.read_n_rows(tb, f_raw)
 
         chan_name = tb.split('/')[0]
         t1_noise, n_rows_read = raw_store.read_object(tb, f_raw, start_row=0, n_rows=buffer_len)
+        t1_data.append(t1_noise)
 
 
-    return t1_noise
+    return t1_data
 
 
 def get_t2_data_multiple(runs):
@@ -244,28 +253,3 @@ def get_df_multiple(runs, tb=None):
     dictionary = pd.concat(lis)
     dictionary = dictionary.reset_index(drop=True)
     return dictionary
-
-
-'''
-def get_fwhm(data, min, max, peak):
-    counts, bins, bars = plt.hist(data, histtype='step', bins=160000)
-    plt.xlim(min, max)
-    plt.ylim(0, 150)
-    lower = find_nearest_bin(bins, min)
-    upper = find_nearest_bin(bins, max)
-    ydata = counts[lower:upper]
-    xdata = bins[lower:upper]
-
-    gmodel = Model(lingaus)
-    # params = gmodel.make_params(A=700, m1=315.5, s1=0.5, H_tail=-0.000001, H_step=1, tau=-0.5, slope=-6, intrcpt=180)
-    params = gmodel.make_params(a1=600, m1=peak, s1=0.1, slope=-0.046, intrcpt=58)
-    # params['s1'].vary = False
-    result = gmodel.fit(ydata, params, x=xdata)
-
-    sigma = result.params['s1'].value
-    FWHM = 2.355*sigma
-    err = 2.355*result.params['s1'].stderr
-    energy = result.params['m1'].value
-
-    return FWHM, err, energy
-'''
