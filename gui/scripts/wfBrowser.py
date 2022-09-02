@@ -22,6 +22,7 @@ def pick_file(e):
     run_table.current(0)
 
 def next(index, data):
+    plt.clf()
     fig = Figure(figsize = (5,5) , dpi = 100)
 
     numOfImages = len(data[0]["waveform"]["values"].nda)
@@ -58,7 +59,7 @@ def next(index, data):
     button_next.grid(row=8, column=7)
 
 def back(index, data):
-
+    plt.clf()
     fig = Figure(figsize = (5,5) , dpi = 100)
 
     numOfImages = len(data[0]["waveform"]["values"].nda)
@@ -97,6 +98,7 @@ def back(index, data):
 
 
 def graph(fileName, table):
+    plt.clf()
     fig = Figure(figsize = (5,5) , dpi = 100)
     t1_data = fd.get_t1_data(str(fileName[3:7]), table)
 
