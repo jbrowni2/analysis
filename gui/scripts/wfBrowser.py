@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import ttk
 from PIL import Image, ImageTk
 from tkinter import messagebox
 from tkinter import filedialog
@@ -9,6 +10,16 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,
 NavigationToolbar2Tk)
 import processes.foundation as fd
+import os
+from tkinter import messagebox
+from tkinter import filedialog
+
+
+def pick_file(e):
+    file = runFile.get()
+    tables = fd.get_tables(int(file[3:7]))
+    run_table.config(values=tables)
+    run_table.current(0)
 
 def next(index, data):
     fig = Figure(figsize = (5,5) , dpi = 100)
@@ -85,9 +96,9 @@ def back(index, data):
 
 
 
-def graph(run, table):
+def graph(fileName, table):
     fig = Figure(figsize = (5,5) , dpi = 100)
-    t1_data = fd.get_t1_data(run, table)
+    t1_data = fd.get_t1_data(str(fileName[3:7]), table)
 
     numOfImages = len(t1_data[0]["waveform"]["values"].nda)
 
@@ -134,11 +145,21 @@ def Browser():
     # sets the geometry of toplevel
     wfBrowserWindow.geometry("1400x600")
 
+    options = os.listdir("/home/jlb1694/data/raw")
+
+    global runFile
+    runFile = ttk.Combobox(wfBrowserWindow, values=options)
+    runFile.current(0)
+    runFile.grid(row=1, column=0)
+    #bindthecombobox
+    runFile.bind("<<ComboboxSelected>>", pick_file)
+
+    global run_table
+    run_table = ttk.Combobox(wfBrowserWindow, value=[" "])
+    run_table.grid(row=3, column=0)
+
     # A Label widget to show in toplevel
-    runNum = Entry(wfBrowserWindow, width=35, borderwidth=5)
-    runNum.grid(row=1, column=0, columnspan=3, padx=10, pady=10)
-    tableName = Entry(wfBrowserWindow, width=35, borderwidth=5)
-    tableName.grid(row=3, column=0, columnspan=3, padx=10, pady=10)
-    my_button = Button(wfBrowserWindow, text = "Graph It!", command=lambda: graph(int(runNum.get()), str(tableName.get()))).grid(row=0, column=0)
+
+    my_button = Button(wfBrowserWindow, text = "Graph It!", command=lambda: graph(runFile.get(), str(run_table.get()))).grid(row=0, column=0)
     mylbl = Label(wfBrowserWindow, text = "What run number would you like to browse?").grid(row=2, column=0)
     mylbl2 = Label(wfBrowserWindow, text = "What table would you like to browse?").grid(row=4, column=0)

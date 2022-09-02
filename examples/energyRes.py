@@ -9,6 +9,7 @@ import processes.fitModel as fM
 import processes.histogramAction as hA
 from math import exp, sqrt, pi, erfc
 from lmfit import Model
+import json
 
 
 def main():
@@ -17,15 +18,24 @@ def main():
     fw = []
     energy = []
     yerr = []
+    cwd = os.getcwd()
+    file = cwd + '/detectors.json'
+    with open(file, "r") as read_file:
+        detectors = json.load(read_file)
+
+    intercept = detectors["BeGe"]["Calibration"][1]
+    slope = detectors["BeGe"]["Calibration"][0]
+
 
     runs_list = [[1119,1120,1121,1122], [1124,1125,1126,1127], [1128,1129,1130]]
-    energy_list = [[1172, 1333], [80, 270, 310, 360, 390], [660]]
-    upLow = [[[1072, 1272], [1233, 1433]], [[50, 120], [260, 280], [290, 330], [340, 370], [370, 420]], [[620, 700]]]
+    energy_list = [[1210, 1390], [310, 360, 390], [675]]
+    upLow = [[[1070, 1270], [1270, 1400]], [[290, 330], [340, 370], [370, 420]], [[620, 700]]]
     i = 0
     for runs in runs_list:
         t2_data = fd.get_df_multiple(runs, 'Card1')
+        calenerg = [x*slope + intercept for x in t2_data['trapEmax']]
 
-        counts, bins, bars = plt.hist(t2_data['trapEmax'], histtype='step', bins=160000)
+        counts, bins, bars = plt.hist(calenerg, histtype='step', bins=160000)
         j = 0
         for ran in upLow[i]:
             lower = hA.find_nearest_bin(bins,ran[0])
@@ -40,9 +50,11 @@ def main():
             result = gmodel.fit(ydata,params, x=xdata)
 
             sigma = result.params['s1'].value
+
             fw.append(2.355*sigma)
             yerr.append(2.355*result.params['s1'].stderr)
             energy.append(result.params['m1'].value)
+
 
             j += 1
 
@@ -54,11 +66,11 @@ def main():
     print(energy)
 
     #This code fits the resolution map to the equation it should follow.
-    gmodel = Model(fM.res)
+    gmodel = Model(fM.energyResolution)
     #params = gmodel.make_params(A=200, m1=277, s1=0.9, H_tail=-1, H_step=-1, tau=-1, slope=-0.12, intrcpt=180)
-    params = gmodel.make_params(m=0.02,intrcpt = 6.0, c = 0.5)
+    params = gmodel.make_params(m=0.057913197608030015, intrcpt=4.3, c=0.0007720878902321339)
     #params['intrcpt'].vary = False
-    #params['m'].vary = False
+    params['m'].vary = False
     #params['c'].vary = False
     result = gmodel.fit(fw,params, x=energy)
 

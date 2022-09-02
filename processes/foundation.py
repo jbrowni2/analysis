@@ -253,3 +253,17 @@ def get_df_multiple(runs, tb=None):
     dictionary = pd.concat(lis)
     dictionary = dictionary.reset_index(drop=True)
     return dictionary
+
+def get_tables(run):
+    cwd = os.getcwd()
+    file = cwd + '/address.json'
+    with open(file, 'r') as read_file:
+        data = json.load(read_file)
+
+    t1_dir = data['tier1_dir']
+
+
+    f_raw = t1_dir + '/Run' + str(run) + '.lh5'
+
+    lh5_keys = lh5.ls(f_raw)
+    return lh5_keys

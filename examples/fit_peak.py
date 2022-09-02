@@ -13,12 +13,13 @@ from lmfit import Model
 
 def main():
 
-    t2_data = fd.get_df(1124, 'Card1')
+    runs = [1119,1120,1121,1122]
+    t2_data = fd.get_df_multiple(runs, 'Card1')
 
     counts, bins, bars = plt.hist(t2_data['trapEmax'], histtype='step', bins=160000)
 
-    lower = hA.find_nearest_bin(bins,50)
-    upper = hA.find_nearest_bin(bins,120)
+    lower = hA.find_nearest_bin(bins,1070)
+    upper = hA.find_nearest_bin(bins,1270)
     ydata = counts[lower:upper]
     xdata = bins[lower:upper]
 
@@ -39,8 +40,8 @@ def main():
 
     print(result.fit_report())
     plt.hist(t2_data['trapEmax'], histtype='step', bins=160000)
-    plt.xlim(50, 120)
-    plt.ylim(0,2000)
+    plt.xlim(1070, 1270)
+    plt.ylim(0,200)
     plt.xlabel("Energy [keV]")
     #plt.text(76.5,1000, "FWHM = 0.459(4) keV")
     plt.plot(xdata, result.best_fit, 'r-', label='best fit')
