@@ -13,92 +13,138 @@ import processes.foundation as fd
 import os
 from tkinter import messagebox
 from tkinter import filedialog
+import json
+import customtkinter
 
+import customtkinter
 
-def pick_file(e):
-    file = runFile.get()
+customtkinter.set_appearance_mode("System")  # Modes: system (default), light, dark
+customtkinter.set_default_color_theme("blue")  # Themes: blue (default), dark-blue, green
+
+def clear(frame):
+    for widget in frame.winfo_children():
+        widget.destroy()
+
+def pick_file(file):
     tables = fd.get_tables(int(file[3:7]))
-    run_table.config(values=tables)
-    run_table.current(0)
+    table_var = customtkinter.StringVar(value=tables[0])
+    run_table.set(tables[0])
+    run_table.configure(values=tables)
+
 
 def next(index, data):
     plt.clf()
+
+    clear(plotFrame)
+    plotFrameLbl = customtkinter.CTkLabel(plotFrame, text="Waveform Plot", text_font=('Times', 12), bg_color='gray')
+    plotFrameLbl.place(x=250, y=10)
+
     fig = Figure(figsize = (5,5) , dpi = 100)
 
     numOfImages = len(data[0]["waveform"]["values"].nda)
 
-    if index > (numOfImages - 1):
+    if index > numOfImages-1:
         index = 0
 
-    statusText = "Image " + str(index+1) + " of " + str(numOfImages)
-    status = Label(wfBrowserWindow, text=statusText, bd=1, relief=SUNKEN, anchor=W)
-    status.grid(row=9, column=5, columnspan=3, sticky=W+E)
+    channelCheck = channelFilter.get()
 
-    df = data[0]["waveform"]["values"].nda[index]
+    if channelCheck != "any":
+        while data[0]["channel"].nda[index] != int(channelCheck):
+            index += 1
+            if index > numOfImages-1:
+                index = 0
+
+    statusText = "Image " + str(index+1) + " of " + str(numOfImages)
+
+    status = Label(plotFrame, text=statusText, bd=1, relief=SUNKEN, anchor=W)
+    status.place(x=260, y=550)
+
+    df = pd.DataFrame(data[0]["waveform"]["values"].nda[index]).T
+
+    if blSwitch.get() == "on":
+        df = df - np.mean(df.iloc[0][0:1000])
 
     plot1 = fig.add_subplot(111)
-    plot1.plot(df)
+    plot1.plot(df.iloc[0])
 
-    canvas = Canvas(wfBrowserWindow, width=700, height=594)
-    canvas.grid(row=0, column=100)
-
-    figure_canvas = FigureCanvasTkAgg(fig, wfBrowserWindow)
+    figure_canvas = FigureCanvasTkAgg(fig, plotFrame)
     figure_canvas.draw()
-    figure_canvas.get_tk_widget().grid(row=0,column=6,rowspan=7,padx=5,pady=2)
+    figure_canvas.get_tk_widget().place(x=80, y=50)
 
-    toolbar_frame = Frame(canvas)
+    toolbar_frame = Frame(plotFrame)
     toolbar = NavigationToolbar2Tk(figure_canvas, toolbar_frame)
     toolbar.update()
-    toolbar_frame.grid(row=9, column=6, pady=2)
+    toolbar_frame.place(x=200, y=580)
 
-    button_back = Button(wfBrowserWindow, text="<<", command=lambda: back(index-1, data))
-    button_next = Button(wfBrowserWindow, text=">>", command=lambda: next(index+1, data))
-    button_quit = Button(wfBrowserWindow, text="Exit Program", command=wfBrowserWindow.quit)
-    button_quit.grid(row=8, column=6)
-    button_back.grid(row=8, column=5)
-    button_next.grid(row=8, column=7)
+    button_back = customtkinter.CTkButton(plotFrame, text="<<", command=lambda: back(index-1, data))
+    button_next = customtkinter.CTkButton(plotFrame, text=">>", command=lambda: next(index+1, data))
+    button_quit = customtkinter.CTkButton(plotFrame, text="Exit Program", command=wfBrowserWindow.quit)
+    button_quit.place(x=250, y=650)
+    button_back.place(x=20, y=650)
+    button_next.place(x=480, y=650)
+
 
 def back(index, data):
     plt.clf()
+    clear(plotFrame)
+    plotFrameLbl = customtkinter.CTkLabel(plotFrame, text="Waveform Plot", text_font=('Times', 12), bg_color='gray')
+    plotFrameLbl.place(x=250, y=10)
+
     fig = Figure(figsize = (5,5) , dpi = 100)
 
     numOfImages = len(data[0]["waveform"]["values"].nda)
 
     if index < 0:
-        index = numOfImages - 1
+        index = numOfImages-1
+
+    channelCheck = channelFilter.get()
+
+    if channelCheck != "any":
+        while data[0]["channel"].nda[index] != int(channelCheck):
+            index -= 1
+            if index < 0:
+                index = numOfImages-1
 
     statusText = "Image " + str(index+1) + " of " + str(numOfImages)
-    status = Label(wfBrowserWindow, text=statusText, bd=1, relief=SUNKEN, anchor=W)
-    status.grid(row=9, column=5, columnspan=3, sticky=W+E)
 
-    df = data[0]["waveform"]["values"].nda[index]
+    status = Label(plotFrame, text=statusText, bd=1, relief=SUNKEN, anchor=W)
+    status.place(x=260, y=550)
+
+
+    df = pd.DataFrame(data[0]["waveform"]["values"].nda[index]).T
+
+    if blSwitch.get() == "on":
+        df = df - np.mean(df.iloc[0][0:1000])
 
     plot1 = fig.add_subplot(111)
-    plot1.plot(df)
+    plot1.plot(df.iloc[0])
 
-    canvas = Canvas(wfBrowserWindow, width=700, height=594)
-    canvas.grid(row=0, column=100)
-
-    figure_canvas = FigureCanvasTkAgg(fig, wfBrowserWindow)
+    figure_canvas = FigureCanvasTkAgg(fig, plotFrame)
     figure_canvas.draw()
-    figure_canvas.get_tk_widget().grid(row=0,column=6,rowspan=7,padx=5,pady=2)
+    figure_canvas.get_tk_widget().place(x=80, y=50)
 
-    toolbar_frame = Frame(canvas)
+    toolbar_frame = Frame(plotFrame)
     toolbar = NavigationToolbar2Tk(figure_canvas, toolbar_frame)
     toolbar.update()
-    toolbar_frame.grid(row=9, column=6, pady=2)
+    toolbar_frame.place(x=200, y=580)
 
-    button_back = Button(wfBrowserWindow, text="<<", command=lambda: back(index-1, data))
-    button_next = Button(wfBrowserWindow, text=">>", command=lambda: next(index+1, data))
-    button_quit = Button(wfBrowserWindow, text="Exit Program", command=wfBrowserWindow.quit)
-    button_quit.grid(row=8, column=6)
-    button_back.grid(row=8, column=5)
-    button_next.grid(row=8, column=7)
+    button_back = customtkinter.CTkButton(plotFrame, text="<<", command=lambda: back(index-1, data))
+    button_next = customtkinter.CTkButton(plotFrame, text=">>", command=lambda: next(index+1, data))
+    button_quit = customtkinter.CTkButton(plotFrame, text="Exit Program", command=wfBrowserWindow.quit)
+    button_quit.place(x=250, y=650)
+    button_back.place(x=20, y=650)
+    button_next.place(x=480, y=650)
 
 
 
 def graph(fileName, table):
     plt.clf()
+    global plotFrame
+    plotFrame = customtkinter.CTkFrame(wfBrowserWindow, width=650, height=700, fg_color='gray')
+    plotFrame.place(x=300,y=20)
+    plotFrameLbl = customtkinter.CTkLabel(plotFrame, text="Waveform Plot", text_font=('Times', 12), bg_color='gray')
+    plotFrameLbl.place(x=250, y=10)
+
     fig = Figure(figsize = (5,5) , dpi = 100)
     t1_data = fd.get_t1_data(str(fileName[3:7]), table)
 
@@ -106,62 +152,102 @@ def graph(fileName, table):
 
     statusText = "Image 1 of " + str(numOfImages)
 
-    status = Label(wfBrowserWindow, text=statusText, bd=1, relief=SUNKEN, anchor=W)
-    status.grid(row=9, column=5, columnspan=3, sticky=W+E)
+    status = Label(plotFrame, text=statusText, bd=1, relief=SUNKEN, anchor=W)
+    status.place(x=260, y=550)
 
-    df = t1_data[0]["waveform"]["values"].nda[0]
+
+    channels = list(map(str, np.unique(t1_data[0]["channel"].nda)))
+    channels.append("any")
+    channelFilter.set(channels[-1])
+    channelFilter.configure(values=channels)
+
+    df = pd.DataFrame(t1_data[0]["waveform"]["values"].nda[0]).T
+
+    if blSwitch.get() == "on":
+        df = df - np.mean(df.iloc[0][0:1000])
 
     plot1 = fig.add_subplot(111)
-    plot1.plot(df)
+    plot1.plot(df.iloc[0])
 
-    canvas = Canvas(wfBrowserWindow, width=700, height=594)
-    canvas.grid(row=0, column=100)
-
-    figure_canvas = FigureCanvasTkAgg(fig, wfBrowserWindow)
+    figure_canvas = FigureCanvasTkAgg(fig, plotFrame)
     figure_canvas.draw()
-    figure_canvas.get_tk_widget().grid(row=0,column=6,rowspan=7,padx=5,pady=2)
+    figure_canvas.get_tk_widget().place(x=80, y=50)
 
-    toolbar_frame = Frame(canvas)
+    toolbar_frame = Frame(plotFrame)
     toolbar = NavigationToolbar2Tk(figure_canvas, toolbar_frame)
     toolbar.update()
-    toolbar_frame.grid(row=9, column=6, pady=2)
+    toolbar_frame.place(x=200, y=580)
 
-    button_back = Button(wfBrowserWindow, text="<<", command=lambda: back(numOfImages-1, t1_data))
-    button_next = Button(wfBrowserWindow, text=">>", command=lambda: next(1, t1_data))
-    button_quit = Button(wfBrowserWindow, text="Exit Program", command=wfBrowserWindow.quit)
-    button_quit.grid(row=8, column=6)
-    button_back.grid(row=8, column=5)
-    button_next.grid(row=8, column=7)
+    button_back = customtkinter.CTkButton(plotFrame, text="<<", command=lambda: back(numOfImages-1, t1_data))
+    button_next = customtkinter.CTkButton(plotFrame, text=">>", command=lambda: next(1, t1_data))
+    button_quit = customtkinter.CTkButton(plotFrame, text="Exit Program", command=wfBrowserWindow.quit)
+    button_quit.place(x=250, y=650)
+    button_back.place(x=20, y=650)
+    button_next.place(x=480, y=650)
 
 
 
 
 def Browser():
     global wfBrowserWindow
-    wfBrowserWindow = Tk()
+    wfBrowserWindow = customtkinter.CTkToplevel()
+    wfBrowserWindow.configure(bg='gray20')
 
     # sets the title of the
     # Toplevel widget
     wfBrowserWindow.title("Wf Browser Window")
 
     # sets the geometry of toplevel
-    wfBrowserWindow.geometry("1400x600")
+    wfBrowserWindow.geometry("1400x800")
 
-    options = os.listdir("/home/jlb1694/data/raw")
+    plotFrame = customtkinter.CTkFrame(wfBrowserWindow, width=650, height=700, fg_color='gray')
+    plotFrame.place(x=300,y=20)
+
+    plotFrameLbl = customtkinter.CTkLabel(plotFrame, text="Waveform Plot", text_font=('Times', 12), bg_color='gray')
+    plotFrameLbl.place(x=250, y=10)
+
+    with open('address.json', 'r') as read_file:
+        data = json.load(read_file)
+
+    options = os.listdir(data["tier1_dir"])
+
+    dataFrame = customtkinter.CTkFrame(wfBrowserWindow, width=250, height=1000, fg_color='gray')
+    dataFrame.place(x=0,y=0)
 
     global runFile
-    runFile = ttk.Combobox(wfBrowserWindow, values=options)
-    runFile.current(0)
-    runFile.grid(row=1, column=0)
-    #bindthecombobox
-    runFile.bind("<<ComboboxSelected>>", pick_file)
+    combobox_var = customtkinter.StringVar(value=options[0])
+    runFile = customtkinter.CTkComboBox(dataFrame, values=options, variable=combobox_var, command=pick_file, text_font=('Times', 12))
+    runFile.place(x=10, y=70)
 
     global run_table
-    run_table = ttk.Combobox(wfBrowserWindow, value=[" "])
-    run_table.grid(row=3, column=0)
+    run_table = customtkinter.CTkComboBox(dataFrame, values=[" "], text_font=('Times', 12))
+    run_table.place(x=10, y=150)
 
-    # A Label widget to show in toplevel
+    dataLbl = customtkinter.CTkLabel(dataFrame, text="Data Handling", text_font=('Times', 12), bg_color='gray')
+    dataLbl.place(x=20, y=10)
 
-    my_button = Button(wfBrowserWindow, text = "Graph It!", command=lambda: graph(runFile.get(), str(run_table.get()))).grid(row=0, column=0)
-    mylbl = Label(wfBrowserWindow, text = "What run number would you like to browse?").grid(row=2, column=0)
-    mylbl2 = Label(wfBrowserWindow, text = "What table would you like to browse?").grid(row=4, column=0)
+    #adding the filters and the calculations
+    filterFrame = customtkinter.CTkFrame(wfBrowserWindow, width=350, height=350, fg_color='gray')
+    filterFrame.place(x=1000,y=20)
+
+    calculationFrame = customtkinter.CTkFrame(wfBrowserWindow, width=350, height=350, fg_color='white')
+    calculationFrame.place(x=1000,y=400)
+
+    blSwitch_var = customtkinter.StringVar(value="off")
+
+    global blSwitch
+    blSwitch = customtkinter.CTkSwitch(master=filterFrame, text="Baseline Subtraction",
+            variable=blSwitch_var, onvalue="on", offvalue="off")
+    blSwitch.place(x=10, y=325)
+
+    global channelFilter
+    channelFilter = customtkinter.CTkComboBox(filterFrame, values=["Pick Channel"], text_font=('Times', 12))
+    channelFilter.place(x=10, y=20)
+
+
+    my_button = customtkinter.CTkButton(dataFrame, text = "Graph It!", text_font=('Times', 12), text_color=("black", "white"), fg_color="white", command=lambda: graph(runFile.get(), str(run_table.get())))
+    my_button.place(x=10, y=700)
+    mylbl = customtkinter.CTkLabel(dataFrame, text = "What run number would you like?", text_font=('Times', 12), text_color="black")
+    mylbl.place(x=10, y=40)
+    mylbl2 = customtkinter.CTkLabel(dataFrame, text = "What table would you like?", text_font=('Times', 12), text_color="black")
+    mylbl2.place(x=10, y=120)
