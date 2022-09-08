@@ -92,22 +92,22 @@ def next(index, data):
 
     #findRms
     rms = hA.findRms(df.iloc[0])
-    rmsLbl1 = customtkinter.CTkLabel(calculationFrame, text="RMS:", text_font=('Times', 12), bg_color='white')
+    rmsLbl1 = customtkinter.CTkLabel(calculationFrame, text="RMS:", text_font=('Times', 12), bg_color='light blue')
     rmsLbl1.place(x=-40, y=50)
-    rmsLbl2 = customtkinter.CTkLabel(calculationFrame, text=str(rms), text_font=('Times', 12), bg_color='white')
+    rmsLbl2 = customtkinter.CTkLabel(calculationFrame, text=str(rms), text_font=('Times', 12), bg_color='light blue')
     rmsLbl2.place(x=60, y=50)
     rmsLbl3 = customtkinter.CTkLabel(calculationFrame, text="ADC", text_font=('Times', 12),
-        bg_color='white', width=40)
+        bg_color='light blue', width=40)
     rmsLbl3.place(x=220, y=50)
 
     timestampLbl1 = customtkinter.CTkLabel(calculationFrame, text="Timestamp:", text_font=('Times', 12),
-        bg_color='white', width=80)
+        bg_color='light blue', width=80)
     timestampLbl1.place(x=5, y=80)
     timestampLbl2 = customtkinter.CTkLabel(calculationFrame, text=str(data[0]["timestamp"].nda[index]),
-        text_font=('Times', 12), bg_color='white', width=120)
+        text_font=('Times', 12), bg_color='light blue', width=120)
     timestampLbl2.place(x=90, y=80)
     timestampLbl3 = customtkinter.CTkLabel(calculationFrame, text="Clock Units",
-        text_font=('Times', 12), bg_color='white', width=80)
+        text_font=('Times', 12), bg_color='light blue', width=80)
     timestampLbl3.place(x=220, y=80)
 
 
@@ -164,22 +164,22 @@ def back(index, data):
 
     #findRms
     rms = hA.findRms(df.iloc[0])
-    rmsLbl1 = customtkinter.CTkLabel(calculationFrame, text="RMS:", text_font=('Times', 12), bg_color='white')
+    rmsLbl1 = customtkinter.CTkLabel(calculationFrame, text="RMS:", text_font=('Times', 12), bg_color='light blue')
     rmsLbl1.place(x=-40, y=50)
-    rmsLbl2 = customtkinter.CTkLabel(calculationFrame, text=str(rms), text_font=('Times', 12), bg_color='white')
+    rmsLbl2 = customtkinter.CTkLabel(calculationFrame, text=str(rms), text_font=('Times', 12), bg_color='light blue')
     rmsLbl2.place(x=60, y=50)
     rmsLbl3 = customtkinter.CTkLabel(calculationFrame, text="ADC", text_font=('Times', 12),
-        bg_color='white', width=40)
+        bg_color='light blue', width=40)
     rmsLbl3.place(x=220, y=50)
 
     timestampLbl1 = customtkinter.CTkLabel(calculationFrame, text="Timestamp:", text_font=('Times', 12),
-        bg_color='white', width=80)
+        bg_color='light blue', width=80)
     timestampLbl1.place(x=5, y=80)
     timestampLbl2 = customtkinter.CTkLabel(calculationFrame, text=str(data[0]["timestamp"].nda[index]),
-        text_font=('Times', 12), bg_color='white', width=120)
+        text_font=('Times', 12), bg_color='light blue', width=120)
     timestampLbl2.place(x=90, y=80)
     timestampLbl3 = customtkinter.CTkLabel(calculationFrame, text="Clock Units",
-        text_font=('Times', 12), bg_color='white', width=80)
+        text_font=('Times', 12), bg_color='light blue', width=80)
     timestampLbl3.place(x=220, y=80)
 
 
@@ -240,23 +240,23 @@ def graph(fileName, table):
 
     #findRms
     rms = hA.findRms(df.iloc[0])
-    rmsLbl1 = customtkinter.CTkLabel(calculationFrame, text="RMS:", text_font=('Times', 12), bg_color='white')
+    rmsLbl1 = customtkinter.CTkLabel(calculationFrame, text="RMS:", text_font=('Times', 12), bg_color='light blue')
     rmsLbl1.place(x=-40, y=50)
-    rmsLbl2 = customtkinter.CTkLabel(calculationFrame, text=str(rms), text_font=('Times', 12), bg_color='white')
+    rmsLbl2 = customtkinter.CTkLabel(calculationFrame, text=str(rms), text_font=('Times', 12), bg_color='light blue')
     rmsLbl2.place(x=60, y=50)
     rmsLbl3 = customtkinter.CTkLabel(calculationFrame, text="ADC", text_font=('Times', 12),
-        bg_color='white', width=40)
+        bg_color='light blue', width=40)
     rmsLbl3.place(x=220, y=50)
 
 
     timestampLbl1 = customtkinter.CTkLabel(calculationFrame, text="Timestamp:", text_font=('Times', 12),
-        bg_color='white', width=80)
+        bg_color='light blue', width=80)
     timestampLbl1.place(x=5, y=80)
     timestampLbl2 = customtkinter.CTkLabel(calculationFrame, text=str(t1_data[0]["timestamp"].nda[0]),
-        text_font=('Times', 12), bg_color='white', width=120)
+        text_font=('Times', 12), bg_color='light blue', width=120)
     timestampLbl2.place(x=90, y=80)
     timestampLbl3 = customtkinter.CTkLabel(calculationFrame, text="Clock Units",
-        text_font=('Times', 12), bg_color='white', width=80)
+        text_font=('Times', 12), bg_color='light blue', width=80)
     timestampLbl3.place(x=220, y=80)
 
 
@@ -309,10 +309,10 @@ def Browser():
     filterLbl.place(x=20, y=10)
 
     global calculationFrame
-    calculationFrame = customtkinter.CTkFrame(wfBrowserWindow, width=350, height=350, fg_color='white')
+    calculationFrame = customtkinter.CTkFrame(wfBrowserWindow, width=350, height=350, fg_color='light blue')
     calculationFrame.place(x=1000,y=400)
 
-    calculationLbl = customtkinter.CTkLabel(calculationFrame, text="Waveform Calculations", text_font=('Times', 12), bg_color='white')
+    calculationLbl = customtkinter.CTkLabel(calculationFrame, text="Waveform Calculations", text_font=('Times', 12), bg_color='light blue')
     calculationLbl.place(x=20, y=10)
 
     blSwitch_var = customtkinter.StringVar(value="off")
@@ -327,7 +327,7 @@ def Browser():
     channelFilter.place(x=10, y=50)
 
 
-    my_button = customtkinter.CTkButton(dataFrame, text = "Graph It!", text_font=('Times', 12), text_color=("black", "white"), fg_color="white", command=lambda: graph(runFile.get(), str(run_table.get())))
+    my_button = customtkinter.CTkButton(dataFrame, text = "Graph It!", text_font=('Times', 12), text_color=("black", "light blue"), fg_color="light blue", command=lambda: graph(runFile.get(), str(run_table.get())))
     my_button.place(x=10, y=700)
     mylbl = customtkinter.CTkLabel(dataFrame, text = "What run number would you like?", text_font=('Times', 12), text_color="black")
     mylbl.place(x=10, y=40)

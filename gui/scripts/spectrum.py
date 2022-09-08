@@ -23,8 +23,7 @@ import customtkinter
 class spectrumViewer:
 
     def clear(self, frame):
-        for widget in self.frame.winfo_children():
-            widget.destroy()
+        frame.destroy()
 
     def clearAll(self):
         for widget in self.spectrumViewerWindow.winfo_children():
@@ -36,27 +35,42 @@ class spectrumViewer:
     def createEntries(self, numPeak):
         self.peakMinEntries = []
         self.peakMaxEntries = []
-        self.peak_min.delete(0, END)
-        self.peak_max.delete(0, END)
         if numPeak != 0:
             for i in range(int(numPeak)):
-                self.peak_min = Entry(self.spectrumViewerWindow)
-                self.peak_min.grid(row=i+2, column=15, pady=20, padx=5)
+                self.peak_min = Entry(self.actionFrame)
+                self.peak_min.place(x=10, y=i*20+200)
                 self.peakMinEntries.append(self.peak_min)
             for i in range(int(numPeak)):
-                self.peak_max = Entry(self.spectrumViewerWindow)
-                self.peak_max.grid(row=i+2, column=16, pady=20, padx=5)
+                self.peak_max = Entry(self.actionFrame)
+                self.peak_max.place(x=150, y=i*20+200)
                 self.peakMaxEntries.append(self.peak_max)
 
     def set_calibrate(self):
+        self.clear(self.actionFrame)
+        self.actionFrame = customtkinter.CTkFrame(self.spectrumViewerWindow, width=370, height=950, fg_color='gray')
+        self.actionFrame.place(x=1000,y=20)
+
+        self.actionLbl = customtkinter.CTkLabel(self.actionFrame, text="Action Settings", text_font=('Times', 12), bg_color='gray')
+        self.actionLbl.place(x=10, y=20)
+
+        self.outputFrame = customtkinter.CTkFrame(self.actionFrame, width=350, height=280, fg_color='light blue')
+        self.outputFrame.place(x=10,y=650)
+
+        self.outputLbl = customtkinter.CTkLabel(self.outputFrame, text="Action Output",
+            text_font=('Times', 12), bg_color='light blue')
+        self.outputLbl.place(x=20, y=10)
         peakMinEntries = []
         my_entries = []
-        self.num_range = Entry(self.spectrumViewerWindow, width=35, borderwidth=5)
-        self.num_range.grid(row=1, column=15, padx=10, pady=10)
-        self.myRangeLabel = Label(self.spectrumViewerWindow, text = "How many peaks are you fitting?").grid(row=0, column=15)
+        self.num_range = customtkinter.CTkEntry(self.actionFrame, width=35, borderwidth=5)
+        self.num_range.place(x=10, y=80)
+        self.myRangeLabel = customtkinter.CTkLabel(self.actionFrame,
+            text = "How many peaks are you fitting?", text_font=('Times', 12), bg_color='gray')
+        self.myRangeLabel.place(x=10,y=50)
         self.num_range.insert(0, '0')
 
-        self.add_entries = Button(self.spectrumViewerWindow, text = "Add Entries!", command=lambda: self.createEntries(int(self.num_range.get()))).grid(row=0, column=16)
+        self.add_entries = customtkinter.CTkButton(self.actionFrame, text = "Add Entries!",
+            command=lambda: self.createEntries(int(self.num_range.get())))
+        self.add_entries.place(x=10, y=120)
 
 
 
@@ -144,6 +158,26 @@ class spectrumViewer:
         my_menu.add_cascade(label="action", menu=action_menu)
         action_menu.add_command(label="calibrate", command=self.set_calibrate)
 
+        #create the filter frame
+        self.filterFrame = customtkinter.CTkFrame(self.spectrumViewerWindow, width=650, height=250, fg_color='gray')
+        self.filterFrame.place(x=300,y=700)
+
+        self.filterLbl = customtkinter.CTkLabel(self.filterFrame, text="Filter Settings", text_font=('Times', 12), bg_color='gray')
+        self.filterLbl.place(x=10, y=20)
+
+        #create the action frame
+        self.actionFrame = customtkinter.CTkFrame(self.spectrumViewerWindow, width=370, height=950, fg_color='gray')
+        self.actionFrame.place(x=1000,y=20)
+
+        self.actionLbl = customtkinter.CTkLabel(self.actionFrame, text="Action Settings", text_font=('Times', 12), bg_color='gray')
+        self.actionLbl.place(x=10, y=20)
+
+        self.outputFrame = customtkinter.CTkFrame(self.actionFrame, width=350, height=280, fg_color='light blue')
+        self.outputFrame.place(x=10,y=650)
+
+        self.outputLbl = customtkinter.CTkLabel(self.outputFrame, text="Action Output", text_font=('Times', 12), bg_color='light blue')
+        self.outputLbl.place(x=20, y=10)
+
 
     def Single_File(self):
         self.clearAll()
@@ -208,6 +242,26 @@ class spectrumViewer:
         action_menu = Menu(my_menu)
         my_menu.add_cascade(label="action", menu=action_menu)
         action_menu.add_command(label="calibrate", command=self.set_calibrate)
+
+        #create the filter frame
+        self.filterFrame = customtkinter.CTkFrame(self.spectrumViewerWindow, width=650, height=250, fg_color='gray')
+        self.filterFrame.place(x=300,y=700)
+
+        self.filterLbl = customtkinter.CTkLabel(self.filterFrame, text="Filter Settings", text_font=('Times', 12), bg_color='gray')
+        self.filterLbl.place(x=10, y=20)
+
+        #create the action frame
+        self.actionFrame = customtkinter.CTkFrame(self.spectrumViewerWindow, width=370, height=950, fg_color='gray')
+        self.actionFrame.place(x=1000,y=20)
+
+        self.actionLbl = customtkinter.CTkLabel(self.actionFrame, text="Action Settings", text_font=('Times', 12), bg_color='gray')
+        self.actionLbl.place(x=10, y=20)
+
+        self.outputFrame = customtkinter.CTkFrame(self.actionFrame, width=350, height=280, fg_color='light blue')
+        self.outputFrame.place(x=10,y=650)
+
+        self.outputLbl = customtkinter.CTkLabel(self.outputFrame, text="Action Output", text_font=('Times', 12), bg_color='light blue')
+        self.outputLbl.place(x=20, y=10)
 
 
     def graphSingle(self, fileName, table, bin):
@@ -340,3 +394,24 @@ class spectrumViewer:
         action_menu = Menu(my_menu)
         my_menu.add_cascade(label="action", menu=action_menu)
         action_menu.add_command(label="calibrate", command=self.set_calibrate)
+
+
+        #create the filter frame
+        self.filterFrame = customtkinter.CTkFrame(self.spectrumViewerWindow, width=650, height=250, fg_color='gray')
+        self.filterFrame.place(x=300,y=700)
+
+        self.filterLbl = customtkinter.CTkLabel(self.filterFrame, text="Filter Settings", text_font=('Times', 12), bg_color='gray')
+        self.filterLbl.place(x=10, y=20)
+
+        #create the action frame
+        self.actionFrame = customtkinter.CTkFrame(self.spectrumViewerWindow, width=370, height=950, fg_color='gray')
+        self.actionFrame.place(x=1000,y=20)
+
+        self.actionLbl = customtkinter.CTkLabel(self.actionFrame, text="Action Settings", text_font=('Times', 12), bg_color='gray')
+        self.actionLbl.place(x=10, y=20)
+
+        self.outputFrame = customtkinter.CTkFrame(self.actionFrame, width=350, height=280, fg_color='light blue')
+        self.outputFrame.place(x=10,y=650)
+
+        self.outputLbl = customtkinter.CTkLabel(self.outputFrame, text="Action Output", text_font=('Times', 12), bg_color='light blue')
+        self.outputLbl.place(x=20, y=10)
