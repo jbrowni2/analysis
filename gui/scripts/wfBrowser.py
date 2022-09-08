@@ -10,6 +10,8 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,
 NavigationToolbar2Tk)
 import processes.foundation as fd
+import processes.fitModel as fM
+import processes.histogramAction as hA
 import os
 from tkinter import messagebox
 from tkinter import filedialog
@@ -26,7 +28,13 @@ def clear(frame):
         widget.destroy()
 
 def pick_file(file):
-    tables = fd.get_tables(int(file[3:7]))
+    fileNum = ""
+    for m in file:
+        if m == 'l':
+            break
+        if m.isdigit():
+            fileNum = fileNum + m
+    tables = fd.get_tables(int(fileNum))
     table_var = customtkinter.StringVar(value=tables[0])
     run_table.set(tables[0])
     run_table.configure(values=tables)
@@ -83,6 +91,26 @@ def next(index, data):
     button_back.place(x=20, y=650)
     button_next.place(x=480, y=650)
 
+    #findRms
+    rms = hA.findRms(df.iloc[0])
+    rmsLbl1 = customtkinter.CTkLabel(calculationFrame, text="RMS:", text_font=('Times', 12), bg_color='white')
+    rmsLbl1.place(x=-40, y=50)
+    rmsLbl2 = customtkinter.CTkLabel(calculationFrame, text=str(rms), text_font=('Times', 12), bg_color='white')
+    rmsLbl2.place(x=60, y=50)
+    rmsLbl3 = customtkinter.CTkLabel(calculationFrame, text="ADC", text_font=('Times', 12),
+        bg_color='white', width=40)
+    rmsLbl3.place(x=220, y=50)
+
+    timestampLbl1 = customtkinter.CTkLabel(calculationFrame, text="Timestamp:", text_font=('Times', 12),
+        bg_color='white', width=80)
+    timestampLbl1.place(x=5, y=80)
+    timestampLbl2 = customtkinter.CTkLabel(calculationFrame, text=str(data[0]["timestamp"].nda[index]),
+        text_font=('Times', 12), bg_color='white', width=120)
+    timestampLbl2.place(x=90, y=80)
+    timestampLbl3 = customtkinter.CTkLabel(calculationFrame, text="Clock Units",
+        text_font=('Times', 12), bg_color='white', width=80)
+    timestampLbl3.place(x=220, y=80)
+
 
 def back(index, data):
     plt.clf()
@@ -135,6 +163,26 @@ def back(index, data):
     button_back.place(x=20, y=650)
     button_next.place(x=480, y=650)
 
+    #findRms
+    rms = hA.findRms(df.iloc[0])
+    rmsLbl1 = customtkinter.CTkLabel(calculationFrame, text="RMS:", text_font=('Times', 12), bg_color='white')
+    rmsLbl1.place(x=-40, y=50)
+    rmsLbl2 = customtkinter.CTkLabel(calculationFrame, text=str(rms), text_font=('Times', 12), bg_color='white')
+    rmsLbl2.place(x=60, y=50)
+    rmsLbl3 = customtkinter.CTkLabel(calculationFrame, text="ADC", text_font=('Times', 12),
+        bg_color='white', width=40)
+    rmsLbl3.place(x=220, y=50)
+
+    timestampLbl1 = customtkinter.CTkLabel(calculationFrame, text="Timestamp:", text_font=('Times', 12),
+        bg_color='white', width=80)
+    timestampLbl1.place(x=5, y=80)
+    timestampLbl2 = customtkinter.CTkLabel(calculationFrame, text=str(data[0]["timestamp"].nda[index]),
+        text_font=('Times', 12), bg_color='white', width=120)
+    timestampLbl2.place(x=90, y=80)
+    timestampLbl3 = customtkinter.CTkLabel(calculationFrame, text="Clock Units",
+        text_font=('Times', 12), bg_color='white', width=80)
+    timestampLbl3.place(x=220, y=80)
+
 
 
 def graph(fileName, table):
@@ -146,7 +194,13 @@ def graph(fileName, table):
     plotFrameLbl.place(x=250, y=10)
 
     fig = Figure(figsize = (5,5) , dpi = 100)
-    t1_data = fd.get_t1_data(str(fileName[3:7]), table)
+    fileNum = ""
+    for m in fileName:
+        if m == 'l':
+            break
+        if m.isdigit():
+            fileNum = fileNum + m
+    t1_data = fd.get_t1_data(str(fileNum), table)
 
     numOfImages = len(t1_data[0]["waveform"]["values"].nda)
 
@@ -184,6 +238,28 @@ def graph(fileName, table):
     button_quit.place(x=250, y=650)
     button_back.place(x=20, y=650)
     button_next.place(x=480, y=650)
+
+    #findRms
+    rms = hA.findRms(df.iloc[0])
+    rmsLbl1 = customtkinter.CTkLabel(calculationFrame, text="RMS:", text_font=('Times', 12), bg_color='white')
+    rmsLbl1.place(x=-40, y=50)
+    rmsLbl2 = customtkinter.CTkLabel(calculationFrame, text=str(rms), text_font=('Times', 12), bg_color='white')
+    rmsLbl2.place(x=60, y=50)
+    rmsLbl3 = customtkinter.CTkLabel(calculationFrame, text="ADC", text_font=('Times', 12),
+        bg_color='white', width=40)
+    rmsLbl3.place(x=220, y=50)
+
+
+    timestampLbl1 = customtkinter.CTkLabel(calculationFrame, text="Timestamp:", text_font=('Times', 12),
+        bg_color='white', width=80)
+    timestampLbl1.place(x=5, y=80)
+    timestampLbl2 = customtkinter.CTkLabel(calculationFrame, text=str(t1_data[0]["timestamp"].nda[0]),
+        text_font=('Times', 12), bg_color='white', width=120)
+    timestampLbl2.place(x=90, y=80)
+    timestampLbl3 = customtkinter.CTkLabel(calculationFrame, text="Clock Units",
+        text_font=('Times', 12), bg_color='white', width=80)
+    timestampLbl3.place(x=220, y=80)
+
 
 
 
@@ -230,8 +306,15 @@ def Browser():
     filterFrame = customtkinter.CTkFrame(wfBrowserWindow, width=350, height=350, fg_color='gray')
     filterFrame.place(x=1000,y=20)
 
+    filterLbl = customtkinter.CTkLabel(filterFrame, text="Waveform Filters", text_font=('Times', 12), bg_color='gray')
+    filterLbl.place(x=20, y=10)
+
+    global calculationFrame
     calculationFrame = customtkinter.CTkFrame(wfBrowserWindow, width=350, height=350, fg_color='white')
     calculationFrame.place(x=1000,y=400)
+
+    calculationLbl = customtkinter.CTkLabel(calculationFrame, text="Waveform Calculations", text_font=('Times', 12), bg_color='white')
+    calculationLbl.place(x=20, y=10)
 
     blSwitch_var = customtkinter.StringVar(value="off")
 
@@ -242,7 +325,7 @@ def Browser():
 
     global channelFilter
     channelFilter = customtkinter.CTkComboBox(filterFrame, values=["Pick Channel"], text_font=('Times', 12))
-    channelFilter.place(x=10, y=20)
+    channelFilter.place(x=10, y=50)
 
 
     my_button = customtkinter.CTkButton(dataFrame, text = "Graph It!", text_font=('Times', 12), text_color=("black", "white"), fg_color="white", command=lambda: graph(runFile.get(), str(run_table.get())))

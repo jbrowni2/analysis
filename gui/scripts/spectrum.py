@@ -18,8 +18,8 @@ import json
 
 class spectrumViewer:
 
-    def clear(self, frame):
-        for widget in self.dataFrame.winfo_children():
+    def clear(self):
+        for widget in self.spectrumViewerWindow.winfo_children():
             widget.destroy()
 
     def fit(self):

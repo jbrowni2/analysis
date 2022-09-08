@@ -17,6 +17,9 @@ from scipy.fft import fft, ifft, fftfreq
 from os.path import expanduser
 import copy
 
+def findRms(array):
+    rms = np.sqrt((np.mean(array[0:1000]**2)))
+    return rms
 
 def find_nearest_bin(array, value):
     array = np.asarray(array)

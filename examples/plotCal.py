@@ -10,7 +10,7 @@ import sys
 
 def main():
 
-    runs = [1128,1129,1130]
+    runs = [x for x in range(1202,1206)]
     processes.show_spectrum.PlotCalSpectrum(runs, det = 'BeGe', tb = 'Card1', xhi=1000, xlo=0, yhi=3000, ylo=0, bin=160000)
 
 
