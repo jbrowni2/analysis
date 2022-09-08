@@ -32,9 +32,30 @@ class spectrumViewer:
     def fit(self):
         pass
 
+    def calibrate(self):
+        peaks = []
+        i = 0
+        for min in self.peakMinEntries:
+            peaks.append([int(min.get()), int(self.peakMaxEntries[i].get())])
+            i+=1
+
+        counts, bins, bars = plt.hist(self.df["trapEmax"], histtype='step', bins=int(self.bin.get()))
+        adc = []
+        for range in peaks:
+            peak_range = hA.find_nearest_bin(bins, range[0]), hA.find_nearest_bin(bins, range[1])
+            peak_idx = np.argmax(counts[peak_range[0]:peak_range[1]]) + peak_range[0]
+            peak = bins[peak_idx]
+            adc.append(peak)
+
+        slope, intercept, r_value, p_value, std_err = stats.linregress(adc,energy)
+
+        print(slope)
+        print(intercept)
+
     def createEntries(self, numPeak):
         self.peakMinEntries = []
         self.peakMaxEntries = []
+        self.energyEntries = []
         if numPeak != 0:
             for i in range(int(numPeak)):
                 self.peak_min = Entry(self.actionFrame)
@@ -44,6 +65,10 @@ class spectrumViewer:
                 self.peak_max = Entry(self.actionFrame)
                 self.peak_max.place(x=150, y=i*20+200)
                 self.peakMaxEntries.append(self.peak_max)
+            for i in range(int(numPeak)):
+                self.energy = Entry(self.actionFrame)
+                self.energy.place(x=10, y=i*20+300)
+                self.energyEntries.append(self.energy)
 
     def set_calibrate(self):
         self.clear(self.actionFrame)
@@ -71,6 +96,12 @@ class spectrumViewer:
         self.add_entries = customtkinter.CTkButton(self.actionFrame, text = "Add Entries!",
             command=lambda: self.createEntries(int(self.num_range.get())))
         self.add_entries.place(x=10, y=120)
+
+        self.calibrate_button = customtkinter.CTkButton(self.actionFrame, text = "Calibrate!",
+            command=self.calibrate)
+        self.calibrate_button.place(x=50, y=400)
+
+
 
 
 
@@ -273,10 +304,10 @@ class spectrumViewer:
                 break
             if m.isdigit():
                 fileNum = fileNum + m
-        df = fd.get_df(str(fileNum), table)
+        self.df = fd.get_df(str(fileNum), table)
 
         plot1 = self.fig.add_subplot(111)
-        plot1.hist(df['trapEmax'], histtype='step', bins=bin)
+        plot1.hist(self.df['trapEmax'], histtype='step', bins=bin)
 
         figure_canvas = FigureCanvasTkAgg(self.fig, self.plotFrame)
         figure_canvas.draw()
@@ -368,7 +399,7 @@ class spectrumViewer:
         self.graph_button = customtkinter.CTkButton(self.dataFrame, text = "Graph It!",
             command=lambda: self.graphSingle(self.runFileStart.get(), str(self.run_table.get()),
             int(self.bin.get())))
-        self.graph_button.place(x=50, y=900)
+        self.graph_button.place(x=50, y=500)
         self.mylbl = customtkinter.CTkLabel(self.dataFrame, text = "What run number would you like to plot?")
         self.mylbl.place(x=10, y=50)
         self.mylbl2 = customtkinter.CTkLabel(self.dataFrame, text = "What table would you like to plot?")
