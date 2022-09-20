@@ -22,6 +22,10 @@ def lingaus(x, a1, m1, s1, slope, intrcpt):
     """1-d gaussian with linear background: gaussian(x, amp, cen, wid)"""
     return a1 * np.exp(-(x-m1)**2 / (2*s1**2)) + slope*x + intrcpt
 
+def linDubGaus(x, a1, m1, s1, a2, m2, s2, slope, intrcpt):
+    """1-d gaussian with linear background: gaussian(x, amp, cen, wid)"""
+    return a1 * np.exp(-(x-m1)**2 / (2*s1**2)) + slope*x + intrcpt + a2 * np.exp(-(x-m2)**2 / (2*s2**2))
+
 
 def noise(x, h1, h2, h3):
     fit = h1*x + h2/x + h3
