@@ -9,10 +9,11 @@ import customtkinter
 # adding Folder_2/subfolder to the system path
 dir = os.getcwd()
 sys.path.insert(0, dir + '/scripts')
+sys.path.insert(0, dir + '/scripts/waveformBrowser')
 
-from wfBrowser import Browser
 from changeDirectory import *
 from spectrum import spectrumViewer
+from wfBrowse import browseClass
 
 master = customtkinter.CTk()
 master.configure(bg='gray20')
@@ -39,7 +40,7 @@ photoSpectrum = photo.subsample(3, 3)
 appLbl = customtkinter.CTkLabel(text="Applications", text_font=('Times', 12), bg_color='gray')
 appLbl.place(x=320, y=40)
 
-wf_btn = customtkinter.CTkButton(appFrame, text="Waveform Browser", image=photoimage, command=Browser,
+wf_btn = customtkinter.CTkButton(appFrame, text="Waveform Browser", image=photoimage, command=lambda: browseClass(master),
  width=50, height=85, fg_color='white', text_color='black', compound='right', text_font=('Times', 12))
 wf_btn.place(x=10,y=50)
 

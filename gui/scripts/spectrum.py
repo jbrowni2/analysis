@@ -17,13 +17,15 @@ from tkinter import messagebox
 from tkinter import filedialog
 import json
 import customtkinter
+from scipy import stats
 
 
 
 class spectrumViewer:
 
     def clear(self, frame):
-        frame.destroy()
+        for widget in frame.winfo_children():
+            widget.destroy()
 
     def clearAll(self):
         for widget in self.spectrumViewerWindow.winfo_children():
@@ -33,6 +35,8 @@ class spectrumViewer:
         pass
 
     def calibrate(self):
+        self.clear(self.outputFrame)
+
         peaks = []
         i = 0
         for min in self.peakMinEntries:
@@ -47,12 +51,67 @@ class spectrumViewer:
             peak = bins[peak_idx]
             adc.append(peak)
 
-        slope, intercept, r_value, p_value, std_err = stats.linregress(adc,energy)
+        ener = []
+        for energy in self.energyEntries:
+            ener.append(float(energy.get()))
 
-        print(slope)
-        print(intercept)
+        slope, intercept, r_value, p_value, std_err = stats.linregress(adc,ener)
+
+        rmsLbl1 = customtkinter.CTkLabel(self.outputFrame, text="slope:", text_font=('Times', 12), bg_color='light blue')
+        rmsLbl1.place(x=-40, y=50)
+        rmsLbl2 = customtkinter.CTkLabel(self.outputFrame, text=str(slope), text_font=('Times', 12), bg_color='light blue')
+        rmsLbl2.place(x=60, y=50)
+        rmsLbl3 = customtkinter.CTkLabel(self.outputFrame, text="keV/adc", text_font=('Times', 12),
+            bg_color='light blue', width=40)
+        rmsLbl3.place(x=220, y=50)
+
+        timestampLbl1 = customtkinter.CTkLabel(self.outputFrame, text="Intercept:", text_font=('Times', 12),
+            bg_color='light blue', width=80)
+        timestampLbl1.place(x=0, y=80)
+        timestampLbl2 = customtkinter.CTkLabel(self.outputFrame, text=str(intercept),
+            text_font=('Times', 12), bg_color='light blue', width=120)
+        timestampLbl2.place(x=80, y=80)
+        timestampLbl3 = customtkinter.CTkLabel(self.outputFrame, text="keV",
+            text_font=('Times', 12), bg_color='light blue', width=80)
+        timestampLbl3.place(x=220, y=80)
+
+        with open('scripts/detector.json','r') as file:
+            file_data = json.load(file)
+        if self.name.get() in file_data:
+            print(file_data)
+            file_data[self.name.get()]["calibration"] = [slope, intercept]
+            print(file_data)
+
+            # convert back to json.
+            with open('scripts/detector.json','w') as file:
+                json.dump(file_data, file, indent = 4)
+        else:
+            print("hi")
+            new_data = {self.name.get():{
+                "calibration": [slope, intercept]
+                }
+            }
+            file_data.update(new_data)
+            # convert back to json.
+            with open('scripts/detector.json','w') as file:
+                json.dump(file_data, file, indent = 4)
+        
+
+
 
     def createEntries(self, numPeak):
+        try:
+            for widget in self.peakMinEntries:
+                widget.destroy()
+            for widget in self.peakMaxEntries:
+                widget.destroy()
+            for widget in self.energyEntries:
+                widget.destroy()
+        except:
+            self.peakMinEntries = []
+            self.peakMaxEntries = []
+            self.energyEntries = []
+
         self.peakMinEntries = []
         self.peakMaxEntries = []
         self.energyEntries = []
@@ -71,21 +130,30 @@ class spectrumViewer:
                 self.energyEntries.append(self.energy)
 
     def set_calibrate(self):
+        #clears the frame
         self.clear(self.actionFrame)
+        #creates the frame
         self.actionFrame = customtkinter.CTkFrame(self.spectrumViewerWindow, width=370, height=950, fg_color='gray')
         self.actionFrame.place(x=1000,y=20)
 
+        #creates the label for action frame
         self.actionLbl = customtkinter.CTkLabel(self.actionFrame, text="Action Settings", text_font=('Times', 12), bg_color='gray')
         self.actionLbl.place(x=10, y=20)
 
+        #creates the output of the frame
         self.outputFrame = customtkinter.CTkFrame(self.actionFrame, width=350, height=280, fg_color='light blue')
         self.outputFrame.place(x=10,y=650)
 
+        #creates the label for the output frame
         self.outputLbl = customtkinter.CTkLabel(self.outputFrame, text="Action Output",
             text_font=('Times', 12), bg_color='light blue')
         self.outputLbl.place(x=20, y=10)
+
+
         peakMinEntries = []
         my_entries = []
+
+        #creates the question of how many peaks do you want to calibrate
         self.num_range = customtkinter.CTkEntry(self.actionFrame, width=35, borderwidth=5)
         self.num_range.place(x=10, y=80)
         self.myRangeLabel = customtkinter.CTkLabel(self.actionFrame,
@@ -99,7 +167,15 @@ class spectrumViewer:
 
         self.calibrate_button = customtkinter.CTkButton(self.actionFrame, text = "Calibrate!",
             command=self.calibrate)
-        self.calibrate_button.place(x=50, y=400)
+        self.calibrate_button.place(x=50, y=500)
+
+        #asking for detector name
+        self.name = customtkinter.CTkEntry(self.actionFrame, width=100, borderwidth=5)
+        self.name.place(x=50, y=580)
+        self.myNameLabel = customtkinter.CTkLabel(self.actionFrame,
+            text = "What is the name of your detector?", text_font=('Times', 12), bg_color='gray')
+        self.myNameLabel.place(x=10,y=550)
+        self.name.insert(0, '0')
 
 
 
@@ -338,10 +414,10 @@ class spectrumViewer:
                 fileEndNum = fileEndNum + m
 
         run_list = [x for x in range(int(fileStartNum), int(fileEndNum)+1)]
-        df = fd.get_df_multiple(run_list, table)
+        self.df = fd.get_df_multiple(run_list, table)
 
         plot1 = self.fig.add_subplot(111)
-        plot1.hist(df['trapEmax'], histtype='step', bins=bin)
+        plot1.hist(self.df['trapEmax'], histtype='step', bins=bin)
 
         figure_canvas = FigureCanvasTkAgg(self.fig, self.plotFrame)
         figure_canvas.draw()
