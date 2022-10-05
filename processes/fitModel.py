@@ -16,6 +16,7 @@ import pygama.lgdo.lh5_store as lh5
 from scipy.fft import fft, ifft, fftfreq
 from os.path import expanduser
 import copy
+import scipy
 
 
 def lingaus(x, a1, m1, s1, slope, intrcpt):
@@ -52,3 +53,10 @@ def energy_fit(fw, energy, error):
     gmodel = Model(res)
     arams = gmodel.make_params(m=0.04915, intrcpt=0.5, c=0.3)
     result = gmodel.fit(fw, params, x=energy)
+
+
+def gePhotoPeak(x,A,mu,B,C,sigma,D,delta):
+    """ some better fit model """
+    return ( A*np.exp( -1. * (x-mu)**2 / (2.*sigma**2) ) 
+                + B + (1./2.)*C*scipy.special.erf( (x-mu) / (sqrt(2.)*sigma) ) 
+                + (1./2.)*D*np.exp((x-mu)/delta)*scipy.special.erf( (x-mu)/(np.sqrt(2)*sigma) + sigma/(np.sqrt(2)*delta)) )
