@@ -20,6 +20,8 @@ import customtkinter
 
 from wfNorm import norm
 from wfTrapFilter import trapFiltered
+from wfWavelet import waveletFiltered
+from wfFFt import fourierFiltered
 
 
 
@@ -52,5 +54,5 @@ def browseClass(master):
     my_menu.add_cascade(label="browse", menu=action_menu)
     action_menu.add_command(label="Waveform", command=lambda: norm(wfBrowserWindow))
     action_menu.add_command(label="Trap Filter", command=lambda: trapFiltered(wfBrowserWindow))
-    action_menu.add_command(label="Fourier Transform", command=test)
-    action_menu.add_command(label="Wavelet Transform", command=test)
+    action_menu.add_command(label="Fourier Transform", command=lambda: fourierFiltered(wfBrowserWindow))
+    action_menu.add_command(label="Wavelet Transform", command=lambda: waveletFiltered(wfBrowserWindow))

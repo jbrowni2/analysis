@@ -36,7 +36,7 @@ class waveBrowse:
         for widget in frame.winfo_children():
             widget.destroy()
 
-    def next(self, index, data, window, numOfImages, time):
+    def next(self, index, data, window, numOfImages, time, dontTransform, peaks, channels):
         plt.clf()
 
         self.clear(self.plotFrame)
@@ -52,17 +52,27 @@ class waveBrowse:
         channelCheck = self.channelFilter.get()
 
         if channelCheck != "any":
-            while data[0]["channel"].nda[index] != int(channelCheck):
+            while channels[index] != int(channelCheck):
                 index += 1
                 if index > numOfImages-1:
                     index = 0
+
+        while peaks[index] > int(self.MaxEnergy.get()) or peaks[index] < int(self.MinEnergy.get()):
+            index +=1
+            if index >= numOfImages:
+                index = 0
+
+
+        if dontTransform:
+            df = pd.DataFrame(data[index])
+        else:
+            df = pd.DataFrame(data[index]).T
+
 
         statusText = "Image " + str(index+1) + " of " + str(numOfImages)
 
         status = Label(self.plotFrame, text=statusText, bd=1, relief=SUNKEN, anchor=W)
         status.place(x=260, y=550)
-
-        df = pd.DataFrame(data[index]).T
 
         if self.blSwitch.get() == "on":
             df = df - np.mean(df.iloc[0][0:1000])
@@ -79,8 +89,10 @@ class waveBrowse:
         toolbar.update()
         toolbar_frame.place(x=200, y=580)
 
-        button_back = customtkinter.CTkButton(self.plotFrame, text="<<", command=lambda: self.back(index-1, data, window, numOfImages, time))
-        button_next = customtkinter.CTkButton(self.plotFrame, text=">>", command=lambda: self.next(index+1, data, window, numOfImages, time))
+        button_back = customtkinter.CTkButton(self.plotFrame, text="<<", command=lambda: self.back(index-1, data, window, numOfImages, 
+            time, dontTransform, peaks, channels))
+        button_next = customtkinter.CTkButton(self.plotFrame, text=">>", command=lambda: self.next(index+1, data, window, numOfImages, 
+            time, dontTransform, peaks, channels))
         button_quit = customtkinter.CTkButton(self.plotFrame, text="Exit Program", command=window.quit)
         button_quit.place(x=250, y=650)
         button_back.place(x=20, y=650)
@@ -107,7 +119,7 @@ class waveBrowse:
         timestampLbl3.place(x=220, y=80)
 
 
-    def back(self, index, data, window, numOfImages, time):
+    def back(self, index, data, window, numOfImages, time, dontTransform, peaks, channels):
         plt.clf()
         self.clear(self.plotFrame)
         plotFrameLbl = customtkinter.CTkLabel(self.plotFrame, text="Waveform Plot", text_font=('Times', 12), bg_color='gray')
@@ -121,21 +133,36 @@ class waveBrowse:
         channelCheck = self.channelFilter.get()
 
         if channelCheck != "any":
-            while data[0]["channel"].nda[index] != int(channelCheck):
+            while channels[index] != int(channelCheck):
                 index -= 1
                 if index < 0:
                     index = numOfImages-1
+
+
+        while peaks[index] > int(self.MaxEnergy.get()) or peaks[index] < int(self.MinEnergy.get()):
+            index -=1
+            if index < 0:
+                index = numOfImages-1
+
+            
+
+
+        if dontTransform:
+            df = pd.DataFrame(data[index])
+        else:
+            df = pd.DataFrame(data[index]).T
+
+        if self.blSwitch.get() == "on":
+            df = df - np.mean(df.iloc[0][0:1000])
+
+
 
         statusText = "Image " + str(index+1) + " of " + str(numOfImages)
 
         status = Label(self.plotFrame, text=statusText, bd=1, relief=SUNKEN, anchor=W)
         status.place(x=260, y=550)
 
-
-        df = pd.DataFrame(data[index]).T
-
-        if self.blSwitch.get() == "on":
-            df = df - np.mean(df.iloc[0][0:1000])
+            
 
         plot1 = fig.add_subplot(111)
         plot1.plot(df.iloc[0])
@@ -149,8 +176,10 @@ class waveBrowse:
         toolbar.update()
         toolbar_frame.place(x=200, y=580)
 
-        button_back = customtkinter.CTkButton(self.plotFrame, text="<<", command=lambda: self.back(index-1, data, window, numOfImages, time))
-        button_next = customtkinter.CTkButton(self.plotFrame, text=">>", command=lambda: self.next(index+1, data, window, numOfImages, time))
+        button_back = customtkinter.CTkButton(self.plotFrame, text="<<", command=lambda: self.back(index-1, data, window, numOfImages, 
+            time, dontTransform, peaks, channels))
+        button_next = customtkinter.CTkButton(self.plotFrame, text=">>", command=lambda: self.next(index+1, data, window, numOfImages, 
+            time, dontTransform, peaks, channels))
         button_quit = customtkinter.CTkButton(self.plotFrame, text="Exit Program", command=window.quit)
         button_quit.place(x=250, y=650)
         button_back.place(x=20, y=650)
@@ -177,17 +206,21 @@ class waveBrowse:
         timestampLbl3.place(x=220, y=80)
 
     def __init__(self, window):
+        #Here is where I create the plotFrame
         self.plotFrame = customtkinter.CTkFrame(window, width=650, height=700, fg_color='gray')
         self.plotFrame.place(x=300,y=20)
 
         self.plotFrameLbl = customtkinter.CTkLabel(window, text="Waveform Plot", text_font=('Times', 12), bg_color='gray')
-        self.plotFrameLbl.place(x=250, y=10)
+        self.plotFrameLbl.place(x=300, y=20)
 
         with open('address.json', 'r') as read_file:
             data = json.load(read_file)
 
         options = os.listdir(data["tier1_dir"])
 
+
+
+        #Here is where I set the dataFrame Widgets
         self.dataFrame = customtkinter.CTkFrame(window, width=250, height=1000, fg_color='gray')
         self.dataFrame.place(x=0,y=0)
 
@@ -203,18 +236,20 @@ class waveBrowse:
         self.dataLbl = customtkinter.CTkLabel(self.dataFrame, text="Data Handling", text_font=('Times', 12), bg_color='gray')
         self.dataLbl.place(x=20, y=10)
 
+        mylbl = customtkinter.CTkLabel(self.dataFrame, text = "What run number would you like?", text_font=('Times', 12), text_color="black")
+        mylbl.place(x=10, y=40)
+        mylbl2 = customtkinter.CTkLabel(self.dataFrame, text = "What table would you like?", text_font=('Times', 12), text_color="black")
+        mylbl2.place(x=10, y=120)
+
+
+        """
+        Here is where I create the Filters that all browsers need.
+        """
         self.filterFrame = customtkinter.CTkFrame(window, width=350, height=350, fg_color='gray')
         self.filterFrame.place(x=1000,y=20)
 
         self.filterLbl = customtkinter.CTkLabel(self.filterFrame, text="Waveform Filters", text_font=('Times', 12), bg_color='gray')
         self.filterLbl.place(x=20, y=10)
-
-        self.calculationFrame = customtkinter.CTkFrame(window, width=350, height=350, fg_color='light blue')
-        self.calculationFrame.place(x=1000,y=400)
-
-        self.calculationLbl = customtkinter.CTkLabel(self.calculationFrame, text="Waveform Calculations", text_font=('Times', 12), bg_color='light blue')
-        self.calculationLbl.place(x=20, y=10)
-
 
         self.blSwitch_var = customtkinter.StringVar(value="off")
         self.blSwitch = customtkinter.CTkSwitch(master=self.filterFrame, text="Baseline Subtraction",
@@ -224,10 +259,24 @@ class waveBrowse:
         self.channelFilter = customtkinter.CTkComboBox(self.filterFrame, values=["Pick Channel"], text_font=('Times', 12))
         self.channelFilter.place(x=10, y=50)
 
-        mylbl = customtkinter.CTkLabel(self.dataFrame, text = "What run number would you like?", text_font=('Times', 12), text_color="black")
-        mylbl.place(x=10, y=40)
-        mylbl2 = customtkinter.CTkLabel(self.dataFrame, text = "What table would you like?", text_font=('Times', 12), text_color="black")
-        mylbl2.place(x=10, y=120)
+        self.MinEnergy = customtkinter.CTkEntry(self.filterFrame)
+        self.MinEnergy.insert(0, "0")
+        self.MinEnergy.place(x=10, y=120)
+        self.MaxEnergy = customtkinter.CTkEntry(self.filterFrame)
+        self.MaxEnergy.place(x=150, y=120)
+        self.MaxEnergy.insert(0, "10000000")
 
+        self.energyLbl = customtkinter.CTkLabel(self.filterFrame, text = "Choose Energy Range in ADC", text_font=('Times', 12), text_color="black")
+        self.energyLbl.place(x=30, y=90)
+
+
+
+
+        #Here is where I create the calculationFrame
+        self.calculationFrame = customtkinter.CTkFrame(window, width=350, height=350, fg_color='light blue')
+        self.calculationFrame.place(x=1000,y=400)
+
+        self.calculationLbl = customtkinter.CTkLabel(self.calculationFrame, text="Waveform Calculations", text_font=('Times', 12), bg_color='light blue')
+        self.calculationLbl.place(x=20, y=10)
 
 

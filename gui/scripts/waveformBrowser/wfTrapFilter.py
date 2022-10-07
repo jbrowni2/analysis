@@ -38,6 +38,13 @@ def graph(fileName, table, window):
             fileNum = fileNum + m
     t1_data = fd.get_t1_data(str(fileNum), table)
 
+    channels = t1_data[0]["channel"].nda
+
+    numOfImages = len(t1_data[0]["waveform"]["values"].nda)
+    peaks = np.zeros(numOfImages)
+    for i,wave in enumerate(t1_data[0]["waveform"]["values"].nda):
+        peaks[i] = max(wave)
+
     numOfImages = len(t1_data[0]["waveform"]["values"].nda)
     time = t1_data[0]["timestamp"].nda
 
@@ -67,6 +74,8 @@ def graph(fileName, table, window):
 
     df = pd.DataFrame(trapWave[0]).T
 
+    dontTransform = False
+
     if wfNormal.blSwitch.get() == "on":
         df = df - np.mean(df.iloc[0][0:1000])
 
@@ -84,9 +93,9 @@ def graph(fileName, table, window):
     toolbar_frame.place(x=200, y=580)
 
     button_back = customtkinter.CTkButton(wfNormal.plotFrame, text="<<", command=lambda: wfNormal.back(numOfImages-1, trapWave,
-         window, numOfImages, time))
+         window, numOfImages, time, dontTransform, peaks, channels))
     button_next = customtkinter.CTkButton(wfNormal.plotFrame, text=">>", command=lambda: wfNormal.next(1, trapWave, 
-        window, numOfImages, time))
+        window, numOfImages, time, dontTransform, peaks , channels))
     button_quit = customtkinter.CTkButton(wfNormal.plotFrame, text="Exit Program", command=window.quit)
     button_quit.place(x=250, y=650)
     button_back.place(x=20, y=650)
