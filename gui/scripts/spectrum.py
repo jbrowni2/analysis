@@ -34,6 +34,9 @@ class spectrumViewer:
     def fit(self):
         pass
 
+
+
+
     def calibrate(self):
         self.clear(self.outputFrame)
 
@@ -96,8 +99,6 @@ class spectrumViewer:
             with open('scripts/detector.json','w') as file:
                 json.dump(file_data, file, indent = 4)
         
-
-
 
     def createEntries(self, numPeak):
         try:
@@ -177,9 +178,43 @@ class spectrumViewer:
         self.myNameLabel.place(x=10,y=550)
         self.name.insert(0, '0')
 
+    def createFitEntries(self, fitModel):
+        pass
+
+    def set_fit(self):
+        #clears the frame
+        self.clear(self.actionFrame)
+        #creates the frame
+        self.actionFrame = customtkinter.CTkFrame(self.spectrumViewerWindow, width=370, height=950, fg_color='gray')
+        self.actionFrame.place(x=1000,y=20)
+
+        #creates the label for action frame
+        self.actionLbl = customtkinter.CTkLabel(self.actionFrame, text="Action Settings", text_font=('Times', 12), bg_color='gray')
+        self.actionLbl.place(x=10, y=20)
+
+        #creates the output of the frame
+        self.outputFrame = customtkinter.CTkFrame(self.actionFrame, width=350, height=280, fg_color='light blue')
+        self.outputFrame.place(x=10,y=650)
+
+        #creates the label for the output frame
+        self.outputLbl = customtkinter.CTkLabel(self.outputFrame, text="Action Output",
+            text_font=('Times', 12), bg_color='light blue')
+        self.outputLbl.place(x=20, y=10)
+
+
+        #Ask what fit they want to perform
+        options = ["Linear Gaussian", "PhotoPeak"]
+        combobox_var = customtkinter.StringVar(value=options[0])
+        self.fitOptions = customtkinter.CTkComboBox(self.actionFrame, values=options
+        , variable=combobox_var, command=self.pick_file, text_font=('Times', 12))
+        self.fitOptions.place(x=20, y=50)
 
 
 
+
+
+    def fit(self):
+        pass
 
 
     def pick_file(self, file):
@@ -447,6 +482,8 @@ class spectrumViewer:
             text_font=('Times', 12), bg_color='gray')
         self.plotFrameLbl.place(x=250, y=10)
 
+        #Starts the dataFrame
+
         with open('address.json', 'r') as read_file:
             data = json.load(read_file)
 
@@ -472,10 +509,17 @@ class spectrumViewer:
                                height=25,)
         self.bin.place(x=10, y=210)
 
+        #ask if they want it calibrated or not.
+        
+
         self.graph_button = customtkinter.CTkButton(self.dataFrame, text = "Graph It!",
             command=lambda: self.graphSingle(self.runFileStart.get(), str(self.run_table.get()),
             int(self.bin.get())))
         self.graph_button.place(x=50, y=500)
+
+
+
+
         self.mylbl = customtkinter.CTkLabel(self.dataFrame, text = "What run number would you like to plot?")
         self.mylbl.place(x=10, y=50)
         self.mylbl2 = customtkinter.CTkLabel(self.dataFrame, text = "What table would you like to plot?")
@@ -501,6 +545,7 @@ class spectrumViewer:
         action_menu = Menu(my_menu)
         my_menu.add_cascade(label="action", menu=action_menu)
         action_menu.add_command(label="calibrate", command=self.set_calibrate)
+        action_menu.add_command(label="fit", command=self.set_fit)
 
 
         #create the filter frame
